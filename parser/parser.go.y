@@ -277,8 +277,8 @@ stmt_import :
 stmt_var :
 	VAR expr_idents '=' exprs
 	{
-		$$ = &ast.VarStmt{Names: $2, Exprs: $4}
-		$$.SetPosition($1.Position())
+    $$ = &ast.VarStmt{Names: $2, Exprs: $4}
+    $$.SetPosition($1.Position())
 	}
 
 stmt_lets :
@@ -299,6 +299,18 @@ stmt_lets :
 			$$ = &ast.LetsStmt{LHSS: $1, RHSS: $3}
 		}
 	}
+  |
+  expr AS expr
+  {
+    $$ = &ast.LetsStmt{LHSS: []ast.Expr{$3}, RHSS: []ast.Expr{$1}}
+    $$.SetPosition($1.Position())
+  }
+  |
+  exprs AS exprs
+  {
+    $$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
+    $$.SetPosition($$.Position())
+  }
 	| expr EQOPCHAN expr
 	{
 		$$ = &ast.ChanStmt{LHS: $1, RHS: $3}
