@@ -710,7 +710,7 @@ type_data :
 type_data_struct :
 	IDENT type_data opt_newlines
 	{
-		$$ = &ast.TypeStruct{
+    $$ = &ast.TypeStruct{
       Kind: ast.TypeStructType,
       StructNames: []string{$1.Lit},
       StructTypes: []*ast.TypeStruct{$2},
