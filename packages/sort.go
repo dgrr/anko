@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/mattn/anko/env"
+	"github.com/dgrr/anko/env"
 )
 
 // SortFuncsStruct provides functions to be used with Sort

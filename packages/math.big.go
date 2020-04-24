@@ -4,7 +4,7 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/mattn/anko/env"
+	"github.com/dgrr/anko/env"
 )
 
 func init() {
@@ -16,7 +16,7 @@ func init() {
 		"Jacobi":       reflect.ValueOf(big.Jacobi),
 		"MaxBase":      reflect.ValueOf(big.MaxBase),
 		"MaxExp":       reflect.ValueOf(big.MaxExp),
-		// TODO: https://github.com/mattn/anko/issues/49
+		// TODO: https://github.com/dgrr/anko/issues/49
 		// "MaxPrec":       reflect.ValueOf(big.MaxPrec),
 		"MinExp":        reflect.ValueOf(big.MinExp),
 		"NewFloat":      reflect.ValueOf(big.NewFloat),

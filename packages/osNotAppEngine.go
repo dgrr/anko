@@ -6,7 +6,7 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/mattn/anko/env"
+	"github.com/dgrr/anko/env"
 )
 
 func osNotAppEngine() {

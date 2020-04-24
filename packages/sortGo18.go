@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sort"
 
-	"github.com/mattn/anko/env"
+	"github.com/dgrr/anko/env"
 )
 
 func sortGo18() {

@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mattn/anko/env"
+	"github.com/dgrr/anko/env"
 )
 
 func stringsGo110() {

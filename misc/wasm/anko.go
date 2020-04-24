@@ -8,10 +8,10 @@ import (
 	"strings"
 	"syscall/js"
 
-	"github.com/mattn/anko/core"
-	"github.com/mattn/anko/packages"
-	"github.com/mattn/anko/parser"
-	"github.com/mattn/anko/vm"
+	"github.com/dgrr/anko/core"
+	"github.com/dgrr/anko/packages"
+	"github.com/dgrr/anko/parser"
+	"github.com/dgrr/anko/vm"
 )
 
 var (

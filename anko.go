@@ -11,11 +11,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mattn/anko/core"
-	"github.com/mattn/anko/env"
-	_ "github.com/mattn/anko/packages"
-	"github.com/mattn/anko/parser"
-	"github.com/mattn/anko/vm"
+	"github.com/dgrr/anko/core"
+	"github.com/dgrr/anko/env"
+	_ "github.com/dgrr/anko/packages"
+	"github.com/dgrr/anko/parser"
+	"github.com/dgrr/anko/vm"
 )
 
 const version = "0.1.7"
