@@ -14,8 +14,8 @@ func Example_vmSort() {
 	e := env.NewEnv()
 
 	script := `
-fmt = import("fmt")
-sort = import("sort")
+import fmt
+import sort
 a = [5, 1.1, 3, "f", "2", "4.4"]
 sortFuncs = make(sort.SortFuncsStruct)
 sortFuncs.LenFunc = func() { return len(a) }
@@ -40,8 +40,8 @@ func Example_vmRegexp() {
 	e := env.NewEnv()
 
 	script := `
-fmt = import("fmt")
-regexp = import("regexp")
+import fmt
+import regexp
 
 re = regexp.MustCompile("^simple$")
 result = re.MatchString("simple")
@@ -84,12 +84,12 @@ func Example_vmHttp() {
 	e := env.NewEnv()
 
 	script := `
-fmt = import("fmt")
-io = import("io")
-ioutil = import("io/ioutil")
-net = import("net")
-http = import("net/http")
-time = import("time")
+import fmt
+import io
+import io/ioutil
+import net
+import net/http
+import time
 
 func handlerRoot(responseWriter, request) {
 	io.WriteString(responseWriter, "Hello World :)")
@@ -97,7 +97,7 @@ func handlerRoot(responseWriter, request) {
 
 serveMux = http.NewServeMux()
 serveMux.HandleFunc("/", handlerRoot)
-listener, err = net.Listen("tcp", ":8080")
+listener, err = net.Listen("tcp", ":8084")
 if err != nil {
 	fmt.Println(err)
 	return
@@ -106,7 +106,7 @@ go http.Serve(listener, serveMux)
 
 client = http.DefaultClient
 
-response, err = client.Get("http://localhost:8080/")
+response, err = client.Get("http://localhost:8084/")
 if err != nil {
 	fmt.Println(err)
 	return

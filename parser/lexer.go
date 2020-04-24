@@ -73,6 +73,7 @@ var opName = map[string]int{
 	"close":    CLOSE,
 	"map":      MAP,
 	"import":   IMPORT,
+	"as":       AS,
 }
 
 var (

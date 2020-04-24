@@ -11,6 +11,7 @@ import (
 %type<stmts> stmts
 %type<stmt> stmt
 %type<stmt_var_or_lets> stmt_var_or_lets
+%type<stmt_import> stmt_import
 %type<stmt_var> stmt_var
 %type<stmt_lets> stmt_lets
 %type<stmt_if> stmt_if
@@ -49,6 +50,7 @@ import (
 	stmts                  ast.Stmt
 	stmt                   ast.Stmt
 	stmt_var_or_lets       ast.Stmt
+  stmt_import            ast.Stmt
 	stmt_var               ast.Stmt
 	stmt_lets              ast.Stmt
 	stmt_if                ast.Stmt
@@ -62,7 +64,7 @@ import (
 	expr                   ast.Expr
 	expr_idents            []string
 	type_data              *ast.TypeStruct
-	type_data_struct       map[string]*ast.TypeStruct
+	type_data_struct       *ast.TypeStruct
 	slice_count            int
 	expr_member_or_ident   ast.Expr
 	expr_member            *ast.MemberExpr
@@ -81,7 +83,7 @@ import (
 	op_multiply            ast.Operator
 }
 
-%token<tok> IDENT NUMBER STRING ARRAY VARARG FUNC RETURN VAR THROW IF ELSE FOR IN EQEQ NEQ GE LE OROR ANDAND NEW TRUE FALSE NIL NILCOALESCE MODULE TRY CATCH FINALLY PLUSEQ MINUSEQ MULEQ DIVEQ ANDEQ OREQ BREAK CONTINUE PLUSPLUS MINUSMINUS SHIFTLEFT SHIFTRIGHT SWITCH CASE DEFAULT GO CHAN STRUCT MAKE OPCHAN EQOPCHAN TYPE LEN DELETE CLOSE MAP IMPORT
+%token<tok> IDENT NUMBER STRING ARRAY VARARG FUNC RETURN VAR THROW IF ELSE FOR IN EQEQ NEQ GE LE OROR ANDAND NEW TRUE FALSE NIL NILCOALESCE MODULE TRY CATCH FINALLY PLUSEQ MINUSEQ MULEQ DIVEQ ANDEQ OREQ BREAK CONTINUE PLUSPLUS MINUSMINUS SHIFTLEFT SHIFTRIGHT SWITCH CASE DEFAULT GO CHAN STRUCT MAKE OPCHAN EQOPCHAN TYPE LEN DELETE CLOSE MAP IMPORT AS
 
 /* lowest precedence */
 %left ,
@@ -239,6 +241,10 @@ stmt :
 	{
 		$$ = $1
 	}
+  | stmt_import
+  {
+    $$ = $1
+  }
 	| expr
 	{
 		$$ = &ast.ExprStmt{Expr: $1}
@@ -254,6 +260,19 @@ stmt_var_or_lets :
 	{
 		$$ = $1
 	}
+
+stmt_import :
+  IMPORT expr
+  {
+    $$ = &ast.ImportStmt{Name: $2}
+    $$.SetPosition($1.Position())
+  }
+  |
+  IMPORT expr AS IDENT
+  {
+    $$ = &ast.ImportStmt{Name: $2, As: $4.Lit}
+    $$.SetPosition($1.Position())
+  }
 
 stmt_var :
 	VAR expr_idents '=' exprs
@@ -555,11 +574,6 @@ expr :
 		$$ = &ast.LenExpr{Expr: $3}
 		$$.SetPosition($1.Position())
 	}
-	| IMPORT '(' expr ')'
-	{
-		$$ = &ast.ImportExpr{Name: $3}
-		$$.SetPosition($1.Position())
-	}
 	| NEW '(' type_data ')'
 	{
 		if $3.Kind == ast.TypeDefault {
@@ -688,22 +702,28 @@ type_data :
 			$$ = &ast.TypeStruct{Kind: ast.TypeChan, SubType: $2}
 		}
 	}
-	| STRUCT '{' type_data_struct '}'
+	| STRUCT '{' opt_newlines type_data_struct opt_newlines '}'
 	{
-		$$ = &ast.TypeStruct{Kind: ast.TypeStructType, Structs: $3 }
+    $$ = $4
 	}
 
 type_data_struct :
-	IDENT type_data
+	IDENT type_data opt_newlines
 	{
-		$$ = map[string]*ast.TypeStruct{$1.Lit: $2}
+		$$ = &ast.TypeStruct{
+      Kind: ast.TypeStructType,
+      StructNames: []string{$1.Lit},
+      StructTypes: []*ast.TypeStruct{$2},
+      Name: $2.Name,
+    }
 	}
 	| type_data_struct ',' opt_newlines IDENT type_data
 	{
-		if len($1) == 0 {
+		if $$ == nil || len($1.StructNames) == 0 {
 			yylex.Error("syntax error: unexpected ','")
 		}
-		$$[$4.Lit] = $5
+    $$.StructNames = append($$.StructNames, $4.Lit)
+    $$.StructTypes = append($$.StructTypes, $5)
 	}
 
 slice_count :

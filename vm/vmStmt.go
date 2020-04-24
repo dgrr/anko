@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/dgrr/anko/ast"
 	"github.com/dgrr/anko/env"
@@ -94,6 +95,83 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 	case *ast.ExprStmt:
 		runInfo.expr = stmt.Expr
 		runInfo.invokeExpr()
+
+	case *ast.ImportStmt:
+		var getNameFromExpr func(vi ast.Expr) string
+		getNameFromExpr = func(vi ast.Expr) string {
+			switch v := vi.(type) {
+			case *ast.MemberExpr:
+				// return members as / instead of .
+				return getNameFromExpr(v.Expr) + "/" + v.Name
+			case *ast.IdentExpr:
+				return v.Lit
+			case *ast.LiteralExpr:
+				if v.Literal == reflect.ValueOf("") {
+					return v.Literal.String()
+				}
+			case *ast.OpExpr:
+				m := v.Op.(*ast.MultiplyOperator)
+				return getNameFromExpr(m.LHS) + m.Operator + getNameFromExpr(m.RHS)
+			}
+			return ""
+		}
+		name := getNameFromExpr(stmt.Name)
+		if len(name) == 0 {
+			runInfo.expr = stmt.Name
+			runInfo.invokeExpr()
+			if runInfo.err != nil {
+				runInfo.rv = nilValue
+				return
+			}
+			runInfo.rv, runInfo.err = convertReflectValueToType(runInfo.rv, stringType)
+			if runInfo.err != nil {
+				runInfo.rv = nilValue
+				return
+			}
+			name = runInfo.rv.String()
+		}
+		runInfo.rv = nilValue
+		if len(name) == 0 {
+			runInfo.err = newStringError(stmt, "cannot read import name")
+			return
+		}
+
+		var err error
+		asv := stmt.As
+		if len(asv) == 0 {
+			if i := strings.LastIndexByte(name, '.'); i > 0 {
+				asv = name[i+1:]
+			} else if i := strings.LastIndexByte(name, '/'); i > 0 {
+				asv = name[i+1:]
+			} else {
+				asv = name
+			}
+		}
+
+		methods, ok := env.Packages[name]
+		if !ok {
+			runInfo.err = newStringError(stmt, "package not found: "+name)
+			return
+		}
+		pack := runInfo.env.NewEnv()
+		for methodName, methodValue := range methods {
+			err = pack.DefineValue(methodName, methodValue)
+			if err != nil {
+				runInfo.err = newStringError(stmt, "import DefineValue error: "+err.Error())
+				return
+			}
+		}
+		types, ok := env.PackageTypes[name]
+		if ok {
+			for typeName, typeValue := range types {
+				err = pack.DefineReflectType(typeName, typeValue)
+				if err != nil {
+					runInfo.err = newStringError(stmt, "import DefineReflectType error: "+err.Error())
+					return
+				}
+			}
+		}
+		runInfo.env.Define(asv, pack)
 
 	// VarStmt
 	case *ast.VarStmt:
