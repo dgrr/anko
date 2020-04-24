@@ -7,9 +7,7 @@
 
 Anko is a scriptable interpreter written in Go.
 
-![](https://raw.githubusercontent.com/dgrr/anko/master/anko.png)
-
-(Picture licensed under CC BY-SA 3.0, photo by Ocdp)
+# BEWARE! THIS IS A FORK OF THE ORIGINAL ANKO. THIS WILL BE A DIFFERENT LANGUAGE.
 
 
 ## Usage Example - Embedded
@@ -20,28 +18,25 @@ package main
 import (
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/dgrr/anko/env"
 	"github.com/dgrr/anko/vm"
 )
 
 func main() {
+	env.Packages["fmt"] = map[string]reflect.Value{
+		"print": reflect.ValueOf(fmt.Println),
+	}
 	e := env.NewEnv()
 
-	err := e.Define("println", fmt.Println)
-	if err != nil {
-		log.Fatalf("Define error: %v\n", err)
-	}
+	script := `import fmt
+             fmt.print("Hello World :)")`
 
-	script := `
-println("Hello World :)")
-`
-
-	_, err = vm.Execute(e, nil, script)
+	_, err := vm.Execute(e, nil, script)
 	if err != nil {
 		log.Fatalf("Execute error: %v\n", err)
 	}
-
 	// output: Hello World :)
 }
 ```
