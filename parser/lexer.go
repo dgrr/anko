@@ -29,7 +29,11 @@ type Error struct {
 
 // Error returns the parse error message.
 func (e *Error) Error() string {
-	return e.Message
+	filename := e.Filename
+	if len(filename) == 0 {
+		filename = "(main)"
+	}
+	return fmt.Sprintf("%s:%d:%d  %s", filename, e.Pos.Line-1, e.Pos.Column, e.Message)
 }
 
 // Scanner stores informations for lexer.
@@ -42,7 +46,7 @@ type Scanner struct {
 
 // opName is correction of operation names.
 var opName = map[string]int{
-	"func":     FUNC,
+	"fn":       FUNC,
 	"return":   RETURN,
 	"var":      VAR,
 	"throw":    THROW,
