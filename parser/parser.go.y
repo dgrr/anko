@@ -298,17 +298,21 @@ stmt_lets :
 		} else {
 			$$ = &ast.LetsStmt{LHSS: $1, RHSS: $3}
 		}
+    $$.SetPosition($$.Position())
 	}
-  |
-  expr AS expr
-  {
-    $$ = &ast.LetsStmt{LHSS: []ast.Expr{$3}, RHSS: []ast.Expr{$1}}
-    $$.SetPosition($1.Position())
-  }
   |
   exprs AS exprs
   {
-    $$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
+    // for maps
+    if len($3) == 2 && len($1) == 1 {
+			if _, ok := $1[0].(*ast.ItemExpr); ok {
+				$$ = &ast.LetMapItemStmt{LHSS: $3, RHS: $1[0]}
+			} else {
+				$$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
+			}
+		} else {
+			$$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
+		}
     $$.SetPosition($$.Position())
   }
 	| expr EQOPCHAN expr
