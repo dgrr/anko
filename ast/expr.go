@@ -95,7 +95,15 @@ type CallExpr struct {
 	SubExprs []Expr
 	VarArg   bool
 	Go       bool
-	ErrCtrl  bool
+}
+
+// CallErrExpr provide calling expression with error control.
+type CallErrExpr struct {
+	ExprImpl
+	Func     reflect.Value
+	Name     string
+	SubExprs []Expr
+	VarArg   bool
 }
 
 // AnonCallExpr provide anonymous calling expression. ex: func(){}().
@@ -105,7 +113,6 @@ type AnonCallExpr struct {
 	SubExprs []Expr
 	VarArg   bool
 	Go       bool
-	ErrCtrl  bool
 }
 
 // MemberExpr provide expression to refer member.

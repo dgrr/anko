@@ -101,6 +101,48 @@ func (runInfo *runInfoStruct) anonCallExpr() {
 	runInfo.invokeExpr()
 }
 
+func (runInfo *runInfoStruct) callErrExpr() {
+	callExpr := runInfo.expr.(*ast.CallErrExpr)
+	runInfo.expr = &ast.CallExpr{
+		Func:     callExpr.Func,
+		Name:     callExpr.Name,
+		SubExprs: callExpr.SubExprs,
+		VarArg:   callExpr.VarArg,
+	}
+	runInfo.callExpr()
+	runInfo.handleError()
+}
+
+func (runInfo *runInfoStruct) handleError() {
+	if runInfo.err == nil && runInfo.callErr >= 0 && runInfo.rv.Kind() == reflect.Slice {
+		rv := runInfo.rv
+		idx := runInfo.callErr
+
+		v := runInfo.rv.Index(idx)
+		if !v.IsNil() {
+			runInfo.stmt = &ast.ThrowStmt{
+				Expr: &ast.LiteralExpr{Literal: v},
+			}
+			runInfo.runSingleStmt()
+			return
+		}
+
+		var ns reflect.Value
+		if rv.Len()-1 == 1 {
+			ns = rv.Index(rv.Len() - idx - 1) // error can be the first or the second arg
+		} else {
+			ns = reflect.MakeSlice(rv.Type(), 0, rv.Len()-1)
+			for j := 0; j < rv.Len(); j++ {
+				if j == idx {
+					continue
+				}
+				ns = reflect.Append(ns, rv.Index(j))
+			}
+		}
+		runInfo.rv = ns
+	}
+}
+
 // callExpr handles *ast.CallExpr which calls a function
 func (runInfo *runInfoStruct) callExpr() {
 	// Note that if the function type looks the same as the VM function type, the returned values will probably be wrong
@@ -160,10 +202,18 @@ func (runInfo *runInfoStruct) callExpr() {
 		}
 		rvs = f.Call(args)
 	}
-	for i, v := range rvs {
-		if v.Type() == errorType {
-			runInfo.callErr = i
-			break
+	// virtual functions already handle errors (included in the return)
+	if !isRunVMFunction {
+		for i, v := range rvs {
+			isErr := v.Type() == errorType
+			if !isErr && v.CanInterface() {
+				_, isErr = v.Interface().(error)
+			}
+
+			if isErr {
+				runInfo.callErr = i
+				break
+			}
 		}
 	}
 

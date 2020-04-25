@@ -219,24 +219,12 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 	case *ast.LetsStmt:
 		// get right side expression values
 		rvs := make([]reflect.Value, len(stmt.RHSS))
-		var (
-			i            int
-			callsWithErr []int // if multiple calls happened
-			errorsInRV   []int // error index in every call
-		)
-		for i, runInfo.expr = range stmt.RHSS {
-			errCtrl := false
-			if v, ok := runInfo.expr.(*ast.CallExpr); ok {
-				errCtrl = v.ErrCtrl
-			}
+		var i int
 
+		for i, runInfo.expr = range stmt.RHSS {
 			runInfo.invokeExpr()
 			if runInfo.err != nil {
 				return
-			}
-			if errCtrl {
-				callsWithErr = append(callsWithErr, i)
-				errorsInRV = append(errorsInRV, runInfo.callErr)
 			}
 
 			if env, ok := runInfo.rv.Interface().(*env.Env); ok {
@@ -244,32 +232,6 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			} else {
 				rvs[i] = runInfo.rv
 			}
-		}
-
-		for _, n := range callsWithErr { // get the index of the call
-			v := rvs[n]
-			if v.Kind() != reflect.Slice {
-				continue
-			}
-			idx := errorsInRV[n] // index of the error
-			vi := v.Index(idx)
-			if !vi.IsNil() {
-				runInfo.stmt = &ast.ThrowStmt{
-					Expr: &ast.LiteralExpr{Literal: vi},
-				}
-				runInfo.runSingleStmt()
-				return
-			}
-
-			ns := reflect.MakeSlice(v.Type(), 0, v.Len()-1)
-			for j := 0; j < v.Len(); j++ {
-				if j == idx {
-					continue
-				}
-				ns = reflect.Append(ns, v.Index(j))
-			}
-			rvs[n] = ns
-			stmt.Unpack = true
 		}
 
 		if len(rvs) == 1 && len(stmt.LHSS) > 1 {

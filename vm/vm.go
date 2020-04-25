@@ -72,7 +72,7 @@ var (
 
 // Error returns the VM error message.
 func (e *Error) Error() string {
-	return fmt.Sprintf("%s at %d:%d", e.Message, e.Pos.Line, e.Pos.Column)
+	return e.Message
 }
 
 // newError makes VM error from error

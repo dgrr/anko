@@ -345,6 +345,7 @@ stmt_lets :
 			$$.SetPosition(chanStmt.LHS.Position())
 		} else if len($1) < 2 {
 			yylex.Error("missing expressions on left side of channel operator")
+      // TODO: return 1
 			$$ = &ast.ChanStmt{RHS: $3}
 			$$.SetPosition($2.Position())
 		}
@@ -366,6 +367,7 @@ stmt_if :
 		ifStmt := $1.(*ast.IfStmt)
 		if ifStmt.Else != nil {
 			yylex.Error("multiple else statement")
+      return 1
 		}
 		ifStmt.Else = $4
 	}
@@ -380,12 +382,14 @@ stmt_for :
 	{
 		if len($2) < 1 {
 			yylex.Error("missing identifier")
-		} else if len($2) > 2 {
-			yylex.Error("too many identifiers")
-		} else {
-			$$ = &ast.ForStmt{Vars: $2, Value: $4, Stmt: $6}
-			$$.SetPosition($1.Position())
+      return 1
 		}
+    if len($2) > 2 {
+			yylex.Error("too many identifiers")
+      return 1
+		}
+    $$ = &ast.ForStmt{Vars: $2, Value: $4, Stmt: $6}
+    $$.SetPosition($1.Position())
 	}
 	| FOR expr '{' compstmt '}'
 	{
@@ -466,6 +470,7 @@ stmt_switch_cases :
 		switchStmt := $1.(*ast.SwitchStmt)
 		if switchStmt.Default != nil {
 			yylex.Error("multiple default statement")
+      return 1
 		}
 		switchStmt.Default = $2
 	}
@@ -502,6 +507,7 @@ exprs :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
+      return 1
 		}
 		$$ = append($1, $4)
 	}
@@ -509,6 +515,7 @@ exprs :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
+      return 1
 		}
 		$$ = append($1, $4)
 	}
@@ -579,7 +586,7 @@ expr :
 	}
 	| IDENT '(' exprs VARARG ')' '?'
 	{
-		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3, VarArg: true, ErrCtrl: true}
+		$$ = &ast.CallErrExpr{Name: $1.Lit, SubExprs: $3, VarArg: true}
 		$$.SetPosition($1.Position())
 	}
 	| IDENT '(' exprs ')'
@@ -589,7 +596,7 @@ expr :
 	}
 	| IDENT '(' exprs ')' '?'
 	{
-		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3, ErrCtrl: true}
+		$$ = &ast.CallErrExpr{Name: $1.Lit, SubExprs: $3}
 		$$.SetPosition($1.Position())
 	}
 	| expr '(' exprs VARARG ')'
@@ -599,18 +606,18 @@ expr :
 	}
 	| expr '(' exprs VARARG ')' '?'
 	{
-		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3, VarArg: true, ErrCtrl: true}
-		$$.SetPosition($1.Position())
+    yylex.Error("anon calls shouldn't use operator '?'")
+    return 1
 	}
 	| expr '(' exprs ')'
 	{
 		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3}
 		$$.SetPosition($1.Position())
 	}
-	| expr '(' exprs ')' '?'
+  | expr '(' exprs ')' '?'
 	{
-		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3, ErrCtrl: true}
-		$$.SetPosition($1.Position())
+    yylex.Error("anon calls shouldn't use operator '?'")
+    return 1
 	}
 	| expr_ident '[' expr ']'
 	{
@@ -705,6 +712,7 @@ expr_idents :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
+      return 1
 		}
 		$$ = append($1, $4.Lit)
 	}
@@ -718,10 +726,10 @@ type_data :
 	{
 		if $1.Kind != ast.TypeDefault {
 			yylex.Error("not type default")
-		} else {
-			$1.Env = append($1.Env, $1.Name)
-			$1.Name = $3.Lit
-		}
+      return 1
+    }
+    $1.Env = append($1.Env, $1.Name)
+    $1.Name = $3.Lit
 	}
 	| '*' type_data
 	{
@@ -774,6 +782,7 @@ type_data_struct :
 	{
 		if $$ == nil || len($1.StructNames) == 0 {
 			yylex.Error("syntax error: unexpected ','")
+      return 1
 		}
     $$.StructNames = append($$.StructNames, $4.Lit)
     $$.StructTypes = append($$.StructTypes, $5)
@@ -819,6 +828,7 @@ expr_literals :
 		num, err := toNumber("-" + $2.Lit)
 		if err != nil {
 			yylex.Error("invalid number: -" + $2.Lit)
+      return 1
 		}
 		$$ = &ast.LiteralExpr{Literal: num}
 		$$.SetPosition($2.Position())
@@ -828,6 +838,7 @@ expr_literals :
 		num, err := toNumber($1.Lit)
 		if err != nil {
 			yylex.Error("invalid number: " + $1.Lit)
+      return 1
 		}
 		$$ = &ast.LiteralExpr{Literal: num}
 		$$.SetPosition($1.Position())
@@ -866,6 +877,7 @@ expr_map :
 	{
 		if $1.Keys == nil {
 			yylex.Error("syntax error: unexpected ','")
+      return 1
 		}
 		$$.Keys = append($$.Keys, $4)
 		$$.Values = append($$.Values, $6)
