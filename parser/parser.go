@@ -1926,8 +1926,8 @@ yydefault:
 		yyDollar = yyS[yypt-6 : yypt+1]
 //line parser.go.y:608
 		{
-			yylex.Error("anon calls shouldn't use operator '?'")
-			return 1
+			yyVAL.expr = &ast.AnonCallErrExpr{Expr: yyDollar[1].expr, SubExprs: yyDollar[3].exprs, VarArg: true}
+			yyVAL.expr.SetPosition(yyDollar[1].expr.Position())
 		}
 	case 85:
 		yyDollar = yyS[yypt-4 : yypt+1]
@@ -1940,8 +1940,8 @@ yydefault:
 		yyDollar = yyS[yypt-5 : yypt+1]
 //line parser.go.y:618
 		{
-			yylex.Error("anon calls shouldn't use operator '?'")
-			return 1
+			yyVAL.expr = &ast.AnonCallErrExpr{Expr: yyDollar[1].expr, SubExprs: yyDollar[3].exprs}
+			yyVAL.expr.SetPosition(yyDollar[1].expr.Position())
 		}
 	case 87:
 		yyDollar = yyS[yypt-4 : yypt+1]

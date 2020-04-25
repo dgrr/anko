@@ -606,8 +606,8 @@ expr :
 	}
 	| expr '(' exprs VARARG ')' '?'
 	{
-    yylex.Error("anon calls shouldn't use operator '?'")
-    return 1
+    $$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3, VarArg: true}
+    $$.SetPosition($1.Position())
 	}
 	| expr '(' exprs ')'
 	{
@@ -616,8 +616,8 @@ expr :
 	}
   | expr '(' exprs ')' '?'
 	{
-    yylex.Error("anon calls shouldn't use operator '?'")
-    return 1
+    $$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3}
+    $$.SetPosition($1.Position())
 	}
 	| expr_ident '[' expr ']'
 	{

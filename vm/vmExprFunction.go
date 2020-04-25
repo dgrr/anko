@@ -78,6 +78,18 @@ func (runInfo *runInfoStruct) funcExpr() {
 	}
 }
 
+func (runInfo *runInfoStruct) anonCallErrExpr() {
+	anonExpr := runInfo.expr.(*ast.AnonCallErrExpr)
+	nExpr := &ast.AnonCallExpr{
+		Expr:     anonExpr.Expr,
+		SubExprs: anonExpr.SubExprs,
+		VarArg:   anonExpr.VarArg,
+	}
+	runInfo.expr = nExpr
+	runInfo.anonCallExpr()
+	runInfo.handleError()
+}
+
 // anonCallExpr handles ast.AnonCallExpr which calls a function anonymously
 func (runInfo *runInfoStruct) anonCallExpr() {
 	anonCallExpr := runInfo.expr.(*ast.AnonCallExpr)

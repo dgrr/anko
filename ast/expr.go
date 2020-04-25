@@ -115,6 +115,14 @@ type AnonCallExpr struct {
 	Go       bool
 }
 
+// AnonCallErrExpr provide anonymous calling expression. ex: func(){}()?.
+type AnonCallErrExpr struct {
+	ExprImpl
+	Expr     Expr
+	SubExprs []Expr
+	VarArg   bool
+}
+
 // MemberExpr provide expression to refer member.
 type MemberExpr struct {
 	ExprImpl
