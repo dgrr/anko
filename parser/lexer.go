@@ -33,7 +33,7 @@ func (e *Error) Error() string {
 	if len(filename) == 0 {
 		filename = "(main)"
 	}
-	return fmt.Sprintf("%s:%d:%d  %s", filename, e.Pos.Line-1, e.Pos.Column, e.Message)
+	return fmt.Sprintf("%s:%d:%d  %s", filename, e.Pos.Line, e.Pos.Column, e.Message)
 }
 
 // Scanner stores informations for lexer.

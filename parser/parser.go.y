@@ -298,7 +298,6 @@ stmt_lets :
 		} else {
 			$$ = &ast.LetsStmt{LHSS: $1, RHSS: $3}
 		}
-    $$.SetPosition($$.Position())
 	}
   | '(' expr_idents ')' '=' exprs
   {
@@ -307,7 +306,6 @@ stmt_lets :
       yyS[i] = &ast.IdentExpr{Lit: yyv}
     }
     $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $5, Unpack: true}
-    $$.SetPosition($$.Position())
 	}
   |
   exprs AS '(' expr_idents ')'
@@ -317,7 +315,7 @@ stmt_lets :
       yyS[i] = &ast.IdentExpr{Lit: yyv}
     }
     $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $1, Unpack: true}
-    $$.SetPosition($$.Position())
+    $$.SetPosition($2.Position())
   }
   |
   exprs AS exprs
@@ -332,7 +330,7 @@ stmt_lets :
 		} else {
 			$$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
 		}
-    $$.SetPosition($$.Position())
+    $$.SetPosition($2.Position())
   }
 	| expr EQOPCHAN expr
 	{
