@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/dgrr/anko/ast"
@@ -12,9 +13,13 @@ func (runInfo *runInfoStruct) invokeLetExpr() {
 
 	// IdentExpr
 	case *ast.IdentExpr:
-		if runInfo.env.SetValue(expr.Lit, runInfo.rv) != nil {
-			runInfo.err = nil
-			runInfo.env.DefineValue(expr.Lit, runInfo.rv)
+		var v reflect.Value
+		runInfo.allocMemUsage(runInfo.rv)
+		v, runInfo.err = runInfo.env.SetValueEvict(expr.Lit, runInfo.rv)
+		if runInfo.err != nil {
+			runInfo.err = runInfo.env.DefineValue(expr.Lit, runInfo.rv)
+		} else {
+			runInfo.deallocMemUsage(v)
 		}
 
 	// MemberExpr
@@ -378,5 +383,10 @@ func (runInfo *runInfoStruct) invokeLetExpr() {
 		runInfo.err = newStringError(expr, "invalid operation")
 		runInfo.rv = nilValue
 	}
-
+	if runInfo.err == nil &&
+		runInfo.options != nil &&
+		runInfo.options.MaxMemoryUsage > 0 &&
+		runInfo.options.MaxMemoryUsage < runInfo.memUsage {
+		runInfo.err = fmt.Errorf("Max memory exceeded")
+	}
 }

@@ -12,7 +12,8 @@ import (
 
 // Options provides options to run VM with
 type Options struct {
-	Debug bool // run in Debug mode
+	MaxMemoryUsage int64
+	Debug          bool // run in Debug mode
 }
 
 type (
@@ -31,6 +32,7 @@ type (
 		stmt     ast.Stmt
 		expr     ast.Expr
 		operator ast.Operator
+		memUsage int64
 
 		// outgoing
 		rv      reflect.Value
@@ -38,6 +40,35 @@ type (
 		err     error
 	}
 )
+
+func getSizeOf(v reflect.Value) int64 {
+	for v.Type() == reflectValueType {
+		v = v.Interface().(reflect.Value)
+	}
+	x := int(v.Type().Size())
+	switch v.Kind() {
+	case reflect.Slice, reflect.Array,
+		reflect.Chan, reflect.String, reflect.Map:
+		x = 0
+		for i := 0; i < v.Len(); i++ {
+			vl := v.Index(i)
+			for vl.Type() == reflectValueType {
+				vl = v.Interface().(reflect.Value)
+			}
+			x += int(vl.Type().Size())
+		}
+	}
+
+	return int64(x)
+}
+
+func (runInfo *runInfoStruct) allocMemUsage(v reflect.Value) {
+	runInfo.memUsage += getSizeOf(v)
+}
+
+func (runInfo *runInfoStruct) deallocMemUsage(v reflect.Value) {
+	runInfo.memUsage -= getSizeOf(v)
+}
 
 var (
 	nilType            = reflect.TypeOf(nil)
