@@ -741,7 +741,7 @@ func TestForLoop(t *testing.T) {
 		{Script: `for var a = 1 ; a > 0 ; a++ { return a }`, RunOutput: int64(1)},
 
 		{Script: `for var a = 1; nil; nil { return }`},
-		{Script: `for var a = 1, 2; nil; nil { return }`},
+		{Script: `for var a = 1, 2; nil; nil { return }`, RunError: fmt.Errorf("Unassigned right values"), RunOutput: int64(2)},
 		{Script: `for var a, b = 1; nil; nil { return }`},
 		{Script: `for var a, b = 1, 2; nil; nil { return }`},
 

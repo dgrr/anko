@@ -341,9 +341,9 @@ a  =  1;
 
 		{Script: `a = 1, 2`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `(a)  = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `var a = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `var a = 1`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
 		{Script: `a = 1, 2, 3`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `var a = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `var a = 1, 2, 3`, RunError: fmt.Errorf("Unassigned right values"), RunOutput: int64(3)},
 
 		// two variables many values
 		{Script: `a, b  = 1,`, ParseError: fmt.Errorf("syntax error")},
@@ -365,7 +365,7 @@ a  =  1;
 		{Script: `a, b = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		{Script: `var a, b = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		{Script: `(a, b) = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
-		{Script: `var a, b = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
+		{Script: `var a, b = 1, 2, 3`, RunError: fmt.Errorf("Unassigned right values"), RunOutput: int64(3)},
 
 		// three variables many values
 		{Script: `a, b, c = 1`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
@@ -375,7 +375,7 @@ a  =  1;
 		{Script: `a, b, c = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		{Script: `var a, b, c = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		{Script: `(a, b, c) = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
-		{Script: `var a, b, c = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
+		{Script: `var a, b, c = 1, 2, 3, 4`, RunOutput: int64(4), RunError: fmt.Errorf("Unassigned right values")},
 
 		// scope
 		{Script: `fn(){ a = 1 }(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},

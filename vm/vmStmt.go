@@ -190,6 +190,11 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			}
 		}
 
+		if len(stmt.Names) < len(rvs) {
+			runInfo.err = newStringError(stmt, "Unassigned right values")
+			return
+		}
+
 		if len(rvs) == 1 && len(stmt.Names) > 1 {
 			// only one right side value but many left side names
 			value := rvs[0]
@@ -234,6 +239,12 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			}
 		}
 
+		// TODO: Do this check on the parser
+		if !stmt.Unpack && len(stmt.LHSS) < len(rvs) {
+			runInfo.err = newStringError(stmt, "Unassigned right values")
+			return
+		}
+
 		if len(rvs) == 1 && len(stmt.LHSS) > 1 {
 			// only one right side value but many left side expressions
 			value := rvs[0]
@@ -273,10 +284,6 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			if runInfo.err != nil {
 				return
 			}
-		}
-		if !stmt.Unpack && i < len(rvs) {
-			runInfo.err = newStringError(stmt, "Unassigned right values")
-			return
 		}
 
 		// return last right side value
