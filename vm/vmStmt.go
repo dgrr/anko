@@ -257,31 +257,6 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			}
 		}
 
-		// if rvs is only one (ex: a function returned a slice)
-		if len(rvs) == 1 {
-			value := rvs[0]
-			if value.Kind() == reflect.Interface && !value.IsNil() {
-				value = value.Elem()
-			}
-			if stmt.Unpack && value.Kind() == reflect.Slice {
-				for n := 0; n < value.Len() && n < len(stmt.LHSS); n++ {
-					v := value.Index(n)
-					runInfo.rv = v
-					runInfo.expr = stmt.LHSS[n]
-					runInfo.invokeLetExpr()
-					if runInfo.err != nil {
-						break
-					}
-				}
-			} else {
-				runInfo.rv = value
-				runInfo.expr = stmt.LHSS[i]
-				runInfo.invokeLetExpr()
-			}
-
-			return
-		}
-
 		// invoke all left side expressions with right side values
 		for i = 0; i < len(rvs) && i < len(stmt.LHSS); i++ {
 			value := rvs[i]
@@ -299,7 +274,7 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 				return
 			}
 		}
-		if i < len(rvs) {
+		if !stmt.Unpack && i < len(rvs) {
 			runInfo.err = newStringError(stmt, "Unassigned right values")
 			return
 		}

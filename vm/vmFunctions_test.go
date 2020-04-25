@@ -178,7 +178,7 @@ func TestFunctions(t *testing.T) {
 		{Script: `a = [true]; a()`, RunError: fmt.Errorf("cannot call type slice")},
 		{Script: `a = [true]; fn b(c) { return c() }; b(a)`, RunError: fmt.Errorf("cannot call type slice")},
 		{Script: `a = {}; a.missing()`, RunError: fmt.Errorf("cannot call type interface"), Output: map[string]interface{}{"a": map[interface{}]interface{}{}}},
-		{Script: `a = 1; b = fn(,a){}; a`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: int64(1)},
+		{Script: `a = 1; b = fn(,a){}; a`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
 
 		{Script: `fn a(b) { }; a()`, RunError: fmt.Errorf("function wants 1 arguments but received 0")},
 		{Script: `fn a(b) { }; a(true, true)`, RunError: fmt.Errorf("function wants 1 arguments but received 2")},
@@ -431,7 +431,7 @@ func TestVariadicFunctions(t *testing.T) {
 		{Script: `fn a(b...) { return b }; a([true, true], [true, true])`, RunOutput: []interface{}{[]interface{}{true, true}, []interface{}{true, true}}},
 
 		// params Variadic arg !Variadic
-		{Script: `fn a(b, c...) { return c }; a()`, RunError: fmt.Errorf("fntion wants 2 arguments but received 0")},
+		{Script: `fn a(b, c...) { return c }; a()`, RunError: fmt.Errorf("function wants 2 arguments but received 0")},
 		{Script: `fn a(b, c...) { return c }; a(true)`, RunOutput: []interface{}{}},
 		{Script: `fn a(b, c...) { return c }; a(true, true)`, RunOutput: []interface{}{true}},
 		{Script: `fn a(b, c...) { return c }; a(true, true, true)`, RunOutput: []interface{}{true, true}},

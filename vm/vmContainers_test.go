@@ -859,10 +859,10 @@ func TestMaps(t *testing.T) {
 
 	tests := []Test{
 		// TOFIX: this should have a ParseError
-		{Script: `{ , }`, RunOutput: map[interface{}]interface{}{}},
+		{Script: `{  }`, RunOutput: map[interface{}]interface{}{}},
 		{Script: `{"a": }`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `{ :"a"}`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `{ , "b":"b"}`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: map[interface{}]interface{}{"b": "b"}},
+		{Script: `{ , "b":"b"}`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
 		{Script: `{"a":"a", , "c":"c"}`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `{"b": 1++}`, RunError: fmt.Errorf("invalid operation")},
 		{Script: `{1++: 1}`, RunError: fmt.Errorf("invalid operation")},
@@ -1824,12 +1824,12 @@ func TestMakeStructs(t *testing.T) {
 				B interface{}
 			}{A: interface{}(int64(3)), B: interface{}(int64(4))}}},
 
-		{Script: `a = make(struct1); a.A = func () { return 1 }; a.A()`, Types: map[string]interface{}{"struct1": &struct {
+		{Script: `a = make(struct1); a.A = fn () { return 1 }; a.A()`, Types: map[string]interface{}{"struct1": &struct {
 			A interface{}
 			B interface{}
 		}{}},
 			RunOutput: int64(1)},
-		{Script: `a = make(struct1); a.A = func () { return 1 }; a = *a; a.A()`, Types: map[string]interface{}{"struct1": &struct {
+		{Script: `a = make(struct1); a.A = fn () { return 1 }; a = *a; a.A()`, Types: map[string]interface{}{"struct1": &struct {
 			A interface{}
 			B interface{}
 		}{}},

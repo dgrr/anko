@@ -450,7 +450,6 @@ func (s *Scanner) scanNumber() (string, error) {
 		}
 	} else {
 		// non-hex
-		found := false
 		for {
 			if isDigit(s.peek()) {
 				// is digit
@@ -467,11 +466,6 @@ func (s *Scanner) scanNumber() (string, error) {
 			}
 
 			if s.peek() == 'e' || s.peek() == 'E' {
-				// is e
-				if found {
-					return "", errors.New("unexpected " + string(s.peek()))
-				}
-				found = true
 				s.next()
 
 				// check if + or -
@@ -493,7 +487,8 @@ func (s *Scanner) scanNumber() (string, error) {
 	}
 
 	if isLetter(s.peek()) {
-		return "", errors.New("identifier starts immediately after numeric literal")
+		result = append(result, s.peek())
+		return string(result), errors.New("identifier starts immediately after numeric literal")
 	}
 
 	return string(result), nil

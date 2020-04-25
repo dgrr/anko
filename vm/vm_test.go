@@ -28,9 +28,9 @@ func TestNumbers(t *testing.T) {
 
 		{Script: `1..1`, ParseError: fmt.Errorf("invalid number: 1..1")},
 		{Script: `1e.1`, ParseError: fmt.Errorf("invalid number: 1e.1")},
-		{Script: `1ee1`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `1e+e1`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `0x1g`, ParseError: fmt.Errorf("syntax error")},
+		{Script: `1ee1`, ParseError: fmt.Errorf("invalid number: 1ee1")},
+		{Script: `1e+e1`, ParseError: fmt.Errorf("invalid number: 1e+e1")},
+		{Script: `0x1g`, ParseError: fmt.Errorf("invalid number: 0x1g")},
 		{Script: `9223372036854775808`, ParseError: fmt.Errorf("invalid number: 9223372036854775808")},
 		{Script: `-9223372036854775809`, ParseError: fmt.Errorf("invalid number: -9223372036854775809")},
 
@@ -334,27 +334,26 @@ a  =  1;
 `, RunOutput: int64(1)},
 
 		// one variable many values
-		{Script: `, b = 1, 2`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: int64(2), Output: map[string]interface{}{"b": int64(1)}},
-		{Script: `var , b = 1, 2`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: int64(2), Output: map[string]interface{}{"b": int64(1)}},
+		{Script: `(_, b) = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"b": int64(2)}},
+		{Script: `var , b = 1, 2`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
 		{Script: `a,  = 1, 2`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `var a,  = 1, 2`, ParseError: fmt.Errorf("syntax error")},
 
-		// TOFIX: should not error?
 		{Script: `a = 1, 2`, ParseError: fmt.Errorf("syntax error")},
+		{Script: `(a)  = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
 		{Script: `var a = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
-		// TOFIX: should not error?
 		{Script: `a = 1, 2, 3`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `var a = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1)}},
 
 		// two variables many values
 		{Script: `a, b  = 1,`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `var a, b  = 1,`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `a, b  = ,1`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: int64(1)},
-		{Script: `var a, b  = ,1`, ParseError: fmt.Errorf("syntax error: unexpected ','"), RunOutput: int64(1)},
+		{Script: `a, b  = ,1`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
+		{Script: `var a, b  = ,1`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
 		{Script: `a, b  = 1,,`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `var a, b  = 1,,`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `a, b  = ,1,`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `var a, b  = ,1,`, ParseError: fmt.Errorf("syntax error")},
+		{Script: `a, b  = ,1,`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
+		{Script: `var a, b  = ,1,`, ParseError: fmt.Errorf("syntax error: unexpected ','")},
 		{Script: `a, b  = ,,1`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `var a, b  = ,,1`, ParseError: fmt.Errorf("syntax error")},
 
@@ -365,7 +364,7 @@ a  =  1;
 		{Script: `var a, b = 1`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
 		{Script: `a, b = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		{Script: `var a, b = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
-		{Script: `a, b = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
+		{Script: `(a, b) = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		{Script: `var a, b = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 
 		// three variables many values
@@ -375,7 +374,7 @@ a  =  1;
 		{Script: `var a, b, c = 1, 2`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 		{Script: `a, b, c = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		{Script: `var a, b, c = 1, 2, 3`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
-		{Script: `a, b, c = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
+		{Script: `(a, b, c) = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 		{Script: `var a, b, c = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 
 		// scope

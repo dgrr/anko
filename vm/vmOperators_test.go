@@ -567,8 +567,8 @@ func TestSwitch(t *testing.T) {
 		{Script: `switch {}`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `a = 1; switch a; {}`, ParseError: fmt.Errorf("syntax error")},
 		{Script: `a = 1; switch a = 2 {}`, ParseError: fmt.Errorf("syntax error")},
-		{Script: `a = 1; switch a {default: return 6; default: return 7}`, ParseError: fmt.Errorf("multiple default statement"), RunOutput: int64(7)},
-		{Script: `a = 1; switch a {case 1: return 5; default: return 6; default: return 7}`, ParseError: fmt.Errorf("multiple default statement"), RunOutput: int64(5)},
+		{Script: `a = 1; switch a {default: return 6; default: return 7}`, ParseError: fmt.Errorf("multiple default statement")},
+		{Script: `a = 1; switch a {case 1: return 5; default: return 6; default: return 7}`, ParseError: fmt.Errorf("multiple default statement")},
 
 		// test run errors
 		{Script: `a = 1; switch 1++ {}`, RunError: fmt.Errorf("invalid operation")},

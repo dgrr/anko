@@ -18,7 +18,7 @@ import fmt
 import sort
 a = [5, 1.1, 3, "f", "2", "4.4"]
 sortFuncs = make(sort.SortFuncsStruct)
-sortFuncs.LenFunc = func() { return len(a) }
+sortFuncs.LenFunc = fn() { return len(a) }
 sortFuncs.LessFunc = fn(i, j) { return a[i] < a[j] }
 sortFuncs.SwapFunc = fn(i, j) { temp = a[i]; a[i] = a[j]; a[j] = temp }
 sort.Sort(sortFuncs)

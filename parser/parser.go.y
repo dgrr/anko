@@ -835,9 +835,10 @@ expr_literals :
 	}
 	| NUMBER
 	{
-		num, err := toNumber($1.Lit)
+    yyN := $1.Lit
+		num, err := toNumber(yyN)
 		if err != nil {
-			yylex.Error("invalid number: " + $1.Lit)
+			yylex.Error("invalid number: " + yyN)
       return 1
 		}
 		$$ = &ast.LiteralExpr{Literal: num}
