@@ -33,8 +33,9 @@ type (
 		operator ast.Operator
 
 		// outgoing
-		rv  reflect.Value
-		err error
+		rv      reflect.Value
+		callErr int
+		err     error
 	}
 )
 

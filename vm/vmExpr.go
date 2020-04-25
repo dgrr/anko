@@ -674,11 +674,13 @@ func (runInfo *runInfoStruct) invokeExpr() {
 	// AnonCallExpr
 	case *ast.AnonCallExpr:
 		runInfo.expr = expr
+		runInfo.callErr = 0
 		runInfo.anonCallExpr()
 
 	// CallExpr
 	case *ast.CallExpr:
 		runInfo.expr = expr
+		runInfo.callErr = 0
 		runInfo.callExpr()
 
 	// IncludeExpr

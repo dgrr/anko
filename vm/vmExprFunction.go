@@ -160,6 +160,12 @@ func (runInfo *runInfoStruct) callExpr() {
 		}
 		rvs = f.Call(args)
 	}
+	for i, v := range rvs {
+		if v.Type() == errorType {
+			runInfo.callErr = i
+			break
+		}
+	}
 
 	// TOFIX: how VM pointers/addressing work
 	// Until then, this is a work around to set pointers back to VM variables

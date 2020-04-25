@@ -577,9 +577,19 @@ expr :
 		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3, VarArg: true}
 		$$.SetPosition($1.Position())
 	}
+	| IDENT '(' exprs VARARG ')' '?'
+	{
+		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3, VarArg: true, ErrCtrl: true}
+		$$.SetPosition($1.Position())
+	}
 	| IDENT '(' exprs ')'
 	{
 		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3}
+		$$.SetPosition($1.Position())
+	}
+	| IDENT '(' exprs ')' '?'
+	{
+		$$ = &ast.CallExpr{Name: $1.Lit, SubExprs: $3, ErrCtrl: true}
 		$$.SetPosition($1.Position())
 	}
 	| expr '(' exprs VARARG ')'
@@ -587,9 +597,19 @@ expr :
 		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3, VarArg: true}
 		$$.SetPosition($1.Position())
 	}
+	| expr '(' exprs VARARG ')' '?'
+	{
+		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3, VarArg: true, ErrCtrl: true}
+		$$.SetPosition($1.Position())
+	}
 	| expr '(' exprs ')'
 	{
 		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3}
+		$$.SetPosition($1.Position())
+	}
+	| expr '(' exprs ')' '?'
+	{
+		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3, ErrCtrl: true}
 		$$.SetPosition($1.Position())
 	}
 	| expr_ident '[' expr ']'
