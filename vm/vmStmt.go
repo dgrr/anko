@@ -239,7 +239,7 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			}
 		}
 
-		// TODO: Do this check on the parser
+		// can't check on the parser
 		if !stmt.Unpack && len(stmt.LHSS) < len(rvs) {
 			runInfo.err = newStringError(stmt, "Unassigned right values")
 			return
