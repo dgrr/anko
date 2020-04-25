@@ -1,11 +1,11 @@
 #!anko
 
-# declare function
-func foo(x){
+# declare fntion
+fn foo(x){
   return x + 1
 }
 
-func bar(x ...){
+fn bar(x ...){
   return len(x)
 }
 
@@ -35,13 +35,13 @@ for k in keys(m) {
   println(m[k])
 }
 
-f = func(a) {
+f = fn(a) {
   println(a)
 }
 
 f("あんこ")
 
-f = func(a ...) {
+f = fn(a ...) {
   println(a)
 }
 
@@ -55,14 +55,14 @@ println(toByteSlice("あいう"))
 println(toRuneSlice("あいう"))
 
 a = 1
-func foo() {
+fn foo() {
   a = 2
 }
 foo()
 println(a)
 
 module Foo {
-  func bar1() {
+  fn bar1() {
     println("Foo.bar1")
   }
 }

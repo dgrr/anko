@@ -1,15 +1,15 @@
 #!anko
 
-func Z(f) {
-    return (func(x) {
-        return f(func(y) {
+fn Z(f) {
+    return (fn(x) {
+        return f(fn(y) {
             return x(x)(y)
         })
-    })(func(x) {
-        return f(func(y) {
+    })(fn(x) {
+        return f(fn(y) {
             return x(x)(y)
         })
     })
 }
 
-println(Z(func(f) { return func(n) { return n == 0 ? 1 : n * f(n - 1) } })(5) == 120)
+println(Z(fn(f) { return fn(n) { return n == 0 ? 1 : n * f(n - 1) } })(5) == 120)

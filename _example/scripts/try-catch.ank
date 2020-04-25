@@ -1,6 +1,6 @@
 #!anko
 
-var http = import("net/http")
+import net/http
 
 try {
   http.Do()

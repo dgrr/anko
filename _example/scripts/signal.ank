@@ -1,10 +1,12 @@
 #!anko
 
-var os, signal, time = import("os"), import("os/signal"), import("time")
+import os
+import os/signal
+import time
 
 c = make(chan os.Signal, 1)
 signal.Notify(c, os.Interrupt)
-go func() {
+go fn() {
    <-c
    println("CTRL-C")
    os.Exit(0)

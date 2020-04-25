@@ -1,6 +1,7 @@
 #!anko
 
-var http, ioutil = import("net/http"), import("io/ioutil")
+import net.http
+import io.ioutil
 
 r = http.DefaultClient.Get("http://golang.org/")
 b, _ = ioutil.ReadAll(r[0].Body)

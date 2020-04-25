@@ -1,6 +1,9 @@
 #!anko
 
-var os, net, url, ioutil = import("os"), import("net"), import("net/url"), import("io/ioutil");
+import os
+import net
+import net/url
+import io/ioutil
 
 func connect(uri) {
   proxy = os.Getenv("http_proxy")
