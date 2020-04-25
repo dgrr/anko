@@ -206,25 +206,25 @@ module rectangle {
 	_length = 1
 	_width = 1
 
-	func setLength (length) {
+	fn setLength (length) {
 		if length <= 0 {
 			return
 		}
 		_length = length
 	}
 
-	func setWidth (width) {
+	fn setWidth (width) {
 		if width <= 0 {
 			return
 		}
 		_width = width
 	}
 
-	func area () {
+	fn area () {
 		return _length * _width
 	}
 
-	func perimeter () {
+	fn perimeter () {
 		return 2 * (_length + _width)
 	}
  }

@@ -206,7 +206,7 @@ println(a.A) // 4
 println(a.B) // 5.5
 
 // function
-func a (x) {
+fn a (x) {
 	println(x + 1)
 }
 a(5) // 6

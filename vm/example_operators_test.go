@@ -365,7 +365,7 @@ a <- "a"
 println(<- a)
 
 a = make(chan string)
-go func() {
+go fn() {
 	a <- "a"
 }()
 println(<- a)

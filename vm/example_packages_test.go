@@ -19,8 +19,8 @@ import sort
 a = [5, 1.1, 3, "f", "2", "4.4"]
 sortFuncs = make(sort.SortFuncsStruct)
 sortFuncs.LenFunc = func() { return len(a) }
-sortFuncs.LessFunc = func(i, j) { return a[i] < a[j] }
-sortFuncs.SwapFunc = func(i, j) { temp = a[i]; a[i] = a[j]; a[j] = temp }
+sortFuncs.LessFunc = fn(i, j) { return a[i] < a[j] }
+sortFuncs.SwapFunc = fn(i, j) { temp = a[i]; a[i] = a[j]; a[j] = temp }
 sort.Sort(sortFuncs)
 fmt.Println(a)
 `
@@ -91,7 +91,7 @@ import net
 import net/http
 import time
 
-func handlerRoot(responseWriter, request) {
+fn handlerRoot(responseWriter, request) {
 	io.WriteString(responseWriter, "Hello World :)")
 }
 

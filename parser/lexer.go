@@ -29,11 +29,7 @@ type Error struct {
 
 // Error returns the parse error message.
 func (e *Error) Error() string {
-	filename := e.Filename
-	if len(filename) == 0 {
-		filename = "(main)"
-	}
-	return fmt.Sprintf("%s:%d:%d  %s", filename, e.Pos.Line, e.Pos.Column, e.Message)
+	return e.Message
 }
 
 // Scanner stores informations for lexer.

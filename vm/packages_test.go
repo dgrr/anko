@@ -97,9 +97,9 @@ func TestPackagesSort(t *testing.T) {
 import "sort"
 a = [5, 1.1, 3, "f", "2", "4.4"]
 sortFuncs = make(sort.SortFuncsStruct)
-sortFuncs.LenFunc = func() { return len(a) }
-sortFuncs.LessFunc = func(i, j) { return a[i] < a[j] }
-sortFuncs.SwapFunc = func(i, j) { temp = a[i]; a[i] = a[j]; a[j] = temp }
+sortFuncs.LenFunc = fn() { return len(a) }
+sortFuncs.LessFunc = fn(i, j) { return a[i] < a[j] }
+sortFuncs.SwapFunc = fn(i, j) { temp = a[i]; a[i] = a[j]; a[j] = temp }
 sort.Sort(sortFuncs)
 a
 `,
@@ -167,8 +167,8 @@ func TestPackagesSync(t *testing.T) {
 	t.Parallel()
 
 	tests := []Test{
-		{Script: `import "sync"; once = make(sync.Once); a = []; func add() { a += "a" }; once.Do(add); once.Do(add); a`, RunOutput: []interface{}{"a"}, Output: map[string]interface{}{"a": []interface{}{"a"}}},
-		{Script: `import "sync"; waitGroup = make(sync.WaitGroup); waitGroup.Add(2);  func done() { waitGroup.Done() }; go done(); go done(); waitGroup.Wait(); "a"`, RunOutput: "a"},
+		{Script: `import "sync"; once = make(sync.Once); a = []; fn add() { a += "a" }; once.Do(add); once.Do(add); a`, RunOutput: []interface{}{"a"}, Output: map[string]interface{}{"a": []interface{}{"a"}}},
+		{Script: `import "sync"; waitGroup = make(sync.WaitGroup); waitGroup.Add(2);  fn done() { waitGroup.Done() }; go done(); go done(); waitGroup.Wait(); "a"`, RunOutput: "a"},
 	}
 	runTests(t, tests, nil, &Options{Debug: true})
 }

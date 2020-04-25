@@ -379,21 +379,21 @@ a  =  1;
 		{Script: `var a, b, c = 1, 2, 3, 4`, RunOutput: int64(4), Output: map[string]interface{}{"a": int64(1), "b": int64(2), "c": int64(3)}},
 
 		// scope
-		{Script: `func(){ a = 1 }(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
-		{Script: `func(){ var a = 1 }(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
+		{Script: `fn(){ a = 1 }(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
+		{Script: `fn(){ var a = 1 }(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
 
-		{Script: `a = 1; func(){ a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(2)}},
-		{Script: `var a = 1; func(){ a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(2)}},
-		{Script: `a = 1; func(){ var a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `var a = 1; func(){ var a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `a = 1; fn(){ a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(2)}},
+		{Script: `var a = 1; fn(){ a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(2)}},
+		{Script: `a = 1; fn(){ var a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `var a = 1; fn(){ var a = 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1)}},
 
-		// function return
-		{Script: `a, 1++ = func(){ return 1, 2 }()`, RunError: fmt.Errorf("invalid operation"), Output: map[string]interface{}{"a": int64(1)}},
+		// fntion return
+		{Script: `a, 1++ = fn(){ return 1, 2 }()`, RunError: fmt.Errorf("invalid operation"), Output: map[string]interface{}{"a": int64(1)}},
 
-		{Script: `a = func(){ return 1 }()`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `var a = func(){ return 1 }()`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `a, b = func(){ return 1, 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
-		{Script: `var a, b = func(){ return 1, 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
+		{Script: `a = fn(){ return 1 }()`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `var a = fn(){ return 1 }()`, RunOutput: int64(1), Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `a, b = fn(){ return 1, 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
+		{Script: `var a, b = fn(){ return 1, 2 }()`, RunOutput: int64(2), Output: map[string]interface{}{"a": int64(1), "b": int64(2)}},
 	}
 	runTests(t, tests, nil, &Options{Debug: true})
 }
@@ -413,10 +413,10 @@ func TestModule(t *testing.T) {
 		{Script: `module a { b = 1 }; a.b`, RunOutput: int64(1)},
 		{Script: `module a { b = 1.5 }; a.b`, RunOutput: float64(1.5)},
 		{Script: `module a { b = "a" }; a.b`, RunOutput: "a"},
-		{Script: `module a { func b() { return "b"} }; a.b()`, RunOutput: "b"},
+		{Script: `module a { fn b() { return "b"} }; a.b()`, RunOutput: "b"},
 
-		{Script: `module a { _b = "b"; func c() { return _b} }`, RunOutput: nil},
-		{Script: `module a { _b = "b"; func c() { return _b} }; a.c()`, RunOutput: "b"},
+		{Script: `module a { _b = "b"; fn c() { return _b} }`, RunOutput: nil},
+		{Script: `module a { _b = "b"; fn c() { return _b} }; a.c()`, RunOutput: "b"},
 
 		{Script: `module a { b = 1 }; var c = a; c.b = 2; c.b`, RunOutput: int64(2)},
 
@@ -442,11 +442,11 @@ func TestModule(t *testing.T) {
 		{Script: `module a { b = 1 }; var c = a; var d = a; d.b = 2; d.b`, RunOutput: int64(2)},
 
 		// test type scope
-		{Script: `module b { make(type Duration, a) }; func c() { d = new(time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: time")},
-		{Script: `module time { make(type Duration, a) }; func c() { d = new(time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunOutput: time.Duration(0)},
-		{Script: `module x { module time { make(type Duration, a) } }; func c() { d = new(x.time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunOutput: time.Duration(0)},
-		{Script: `module x { module time { make(type Duration, a) } }; func c() { d = new(y.time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: y")},
-		{Script: `module x { module time { make(type Duration, a) } }; func c() { d = new(x.y.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: y")},
+		{Script: `module b { make(type Duration, a) }; fn c() { d = new(time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: time")},
+		{Script: `module time { make(type Duration, a) }; fn c() { d = new(time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunOutput: time.Duration(0)},
+		{Script: `module x { module time { make(type Duration, a) } }; fn c() { d = new(x.time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunOutput: time.Duration(0)},
+		{Script: `module x { module time { make(type Duration, a) } }; fn c() { d = new(y.time.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: y")},
+		{Script: `module x { module time { make(type Duration, a) } }; fn c() { d = new(x.y.Duration); return *d }; c()`, Input: map[string]interface{}{"a": time.Duration(0)}, RunError: fmt.Errorf("no namespace called: y")},
 	}
 	runTests(t, tests, nil, &Options{Debug: true})
 }
@@ -477,8 +477,8 @@ func TestNew(t *testing.T) {
 		{Script: `a = new(map[string]int64); *a`, RunOutput: map[string]int64{}},
 
 		// chan
-		{Script: `a = new(chan int64); go func(){ (*a) <- 1 }(); <- *a`, RunOutput: int64(1)},
-		{Script: `a = new(chan int64); go func(){ *a <- 1 }(); <- *a`, RunOutput: int64(1)},
+		{Script: `a = new(chan int64); go fn(){ (*a) <- 1 }(); <- *a`, RunOutput: int64(1)},
+		{Script: `a = new(chan int64); go fn(){ *a <- 1 }(); <- *a`, RunOutput: int64(1)},
 
 		// struct
 		{Script: `a = new(struct{ A int64 }); *a`, RunOutput: struct{ A int64 }{}},
@@ -536,8 +536,8 @@ func TestMake(t *testing.T) {
 		{Script: `a = make(***int64); ***a`, RunOutput: int64(0)},
 		{Script: `a = make(*[]int64); *a`, RunOutput: []int64{}},
 		{Script: `a = make(*map[string]int64); *a`, RunOutput: map[string]int64{}},
-		{Script: `a = make(*chan int64); go func(){ (*a) <- 1 }(); <- *a`, RunOutput: int64(1)},
-		{Script: `a = make(*chan int64); go func(){ *a <- 1 }(); <- *a`, RunOutput: int64(1)},
+		{Script: `a = make(*chan int64); go fn(){ (*a) <- 1 }(); <- *a`, RunOutput: int64(1)},
+		{Script: `a = make(*chan int64); go fn(){ *a <- 1 }(); <- *a`, RunOutput: int64(1)},
 
 		// slice
 		{Script: `make([]int64)`, RunOutput: []int64{}},
@@ -557,7 +557,7 @@ func TestMake(t *testing.T) {
 		{Script: `make(map[chan string]int64)`, RunOutput: map[chan string]int64{}},
 
 		// chan
-		{Script: `a = make(chan int64); go func(){ a <- 1 }(); <- a`, RunOutput: int64(1)},
+		{Script: `a = make(chan int64); go fn(){ a <- 1 }(); <- a`, RunOutput: int64(1)},
 		{Script: `a = make(chan int64, 1); a <- 1; <- a`, RunOutput: int64(1)},
 		{Script: `a = make(chan *int64, 1); b = 1; a <- &b; c = <- a; *c`, RunOutput: int64(1)},
 		{Script: `a = make(chan []int64, 1); a <- [1]; <- a`, RunOutput: []int64{1}},
@@ -569,7 +569,7 @@ func TestMake(t *testing.T) {
 		{Script: `make(struct { A *int64 })`, RunOutput: struct{ A *int64 }{}},
 		{Script: `make(struct { A []int64 })`, RunOutput: struct{ A []int64 }{A: []int64{}}},
 		{Script: `make(struct { A map[string]int64 })`, RunOutput: struct{ A map[string]int64 }{A: map[string]int64{}}},
-		{Script: `a = make(struct { A chan int64 }); go func(){ a.A <- 1 }(); <- a.A`, RunOutput: int64(1)},
+		{Script: `a = make(struct { A chan int64 }); go fn(){ a.A <- 1 }(); <- a.A`, RunOutput: int64(1)},
 	}
 	runTests(t, tests, nil, &Options{Debug: true})
 }
@@ -744,15 +744,15 @@ func TestVMDelete(t *testing.T) {
 		{Script: `delete("a", nil)`},
 
 		// test DeleteGlobal
-		{Script: `a = 1; func b() { delete("a") }; b()`, Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `a = 1; func b() { delete("a", false) }; b()`, Output: map[string]interface{}{"a": int64(1)}},
-		{Script: `a = 1; func b() { delete("a", true) }; b(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
-		{Script: `a = 2; func b() { a = 3; delete("a"); return a }; b()`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
-		{Script: `a = 2; func b() { a = 3; delete("a", false); return a }; b()`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
-		{Script: `a = 2; func b() { a = 3; delete("a", true); return a }; b()`, RunError: fmt.Errorf("undefined symbol 'a'")},
-		{Script: `a = 2; func b() { a = 3; delete("a") }; b(); a`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
-		{Script: `a = 2; func b() { a = 3; delete("a", false) }; b(); a`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
-		{Script: `a = 2; func b() { a = 3; delete("a", true) }; b(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
+		{Script: `a = 1; fn b() { delete("a") }; b()`, Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `a = 1; fn b() { delete("a", false) }; b()`, Output: map[string]interface{}{"a": int64(1)}},
+		{Script: `a = 1; fn b() { delete("a", true) }; b(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
+		{Script: `a = 2; fn b() { a = 3; delete("a"); return a }; b()`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
+		{Script: `a = 2; fn b() { a = 3; delete("a", false); return a }; b()`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
+		{Script: `a = 2; fn b() { a = 3; delete("a", true); return a }; b()`, RunError: fmt.Errorf("undefined symbol 'a'")},
+		{Script: `a = 2; fn b() { a = 3; delete("a") }; b(); a`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
+		{Script: `a = 2; fn b() { a = 3; delete("a", false) }; b(); a`, RunOutput: int64(3), Output: map[string]interface{}{"a": int64(3)}},
+		{Script: `a = 2; fn b() { a = 3; delete("a", true) }; b(); a`, RunError: fmt.Errorf("undefined symbol 'a'")},
 
 		// test empty map
 		{Script: `delete(a, "a")`, Input: map[string]interface{}{"a": testMapEmpty}, Output: map[string]interface{}{"a": testMapEmpty}},
@@ -1118,7 +1118,7 @@ func TestContextFunction(t *testing.T) {
 
 	e := env.NewEnv()
 	script := `
-		func myFunc(myVar) {
+		fn myFunc(myVar) {
 			myVar = 3
 		}`
 	envModule, err := e.NewModule("a")
@@ -1244,7 +1244,7 @@ func BenchmarkFibVM(b *testing.B) {
 	}
 
 	script := `
-fib = func(x) {
+fib = fn(x) {
 	if x < 2 {
 		return x
 	}

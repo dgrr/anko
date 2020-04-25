@@ -17,21 +17,21 @@ func Example_vmFunctions() {
 	}
 
 	script := `
-func a(b) {
+fn a(b) {
 	println(b)
 }
 a("b")
 
-a = func(b) {
+a = fn(b) {
 	println(b)
 }
 a("b")
 
-func(b) {
+fn(b) {
 	println(b)
 }("b")
 
-func a() {
+fn a() {
 	return "a"
 }
 println(a())
@@ -39,7 +39,7 @@ println(a())
 println("")
 
 
-func fib(n) {
+fn fib(n) {
 	if (n <= 1) {
 		return n
 	}
@@ -48,7 +48,7 @@ func fib(n) {
 
 println(fib(8))
  
- func sum(n...) {
+ fn sum(n...) {
 	 t = 0
 	 for a in n {
 		 t += a
@@ -57,7 +57,7 @@ println(fib(8))
  }
 println(sum(1, 2, 3, 4))
 
-func add(a, b) {
+fn add(a, b) {
 	return a + b
 } 
 println(add([1, 2]...))
@@ -90,25 +90,25 @@ func Example_vmFunctionsScope() {
 
 	script := `
 a = 1
-func () {
+fn () {
 	a = 2
 }()
 println(a)
 
 var a = 1
-func () {
+fn () {
 	a = 2
 }()
 println(a)
 
 a = 1
-func () {
+fn () {
 	var a = 2
 }()
 println(a)
 
 var a = 1
-func () {
+fn () {
 	var a = 2
 }()
 println(a)
