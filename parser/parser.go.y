@@ -300,6 +300,25 @@ stmt_lets :
 		}
     $$.SetPosition($$.Position())
 	}
+  | '(' expr_idents ')' '=' exprs
+  {
+    yyS := make([]ast.Expr, len($2))
+    for i, yyv := range $2 {
+      yyS[i] = &ast.IdentExpr{Lit: yyv}
+    }
+    $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $5, Unpack: true}
+    $$.SetPosition($$.Position())
+	}
+  |
+  exprs AS '(' expr_idents ')'
+  {
+    yyS := make([]ast.Expr, len($4))
+    for i, yyv := range $4 {
+      yyS[i] = &ast.IdentExpr{Lit: yyv}
+    }
+    $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $1, Unpack: true}
+    $$.SetPosition($$.Position())
+  }
   |
   exprs AS exprs
   {

@@ -238,6 +238,7 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			if value.Kind() == reflect.Interface && !value.IsNil() {
 				value = value.Elem()
 			}
+
 			if (value.Kind() == reflect.Slice || value.Kind() == reflect.Array) && value.Len() > 0 {
 				// value is slice/array, add each value to left side expression
 				for i := 0; i < value.Len() && i < len(stmt.LHSS); i++ {
@@ -260,6 +261,19 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			if value.Kind() == reflect.Interface && !value.IsNil() {
 				value = value.Elem()
 			}
+			if stmt.Unpack && value.Kind() == reflect.Slice {
+				for n := 0; n < value.Len() && n < len(stmt.LHSS); n++ {
+					v := value.Index(n)
+					runInfo.rv = v
+					runInfo.expr = stmt.LHSS[i]
+					runInfo.invokeLetExpr()
+					if runInfo.err != nil {
+						break
+					}
+				}
+				return
+			}
+
 			runInfo.rv = value
 			runInfo.expr = stmt.LHSS[i]
 			runInfo.invokeLetExpr()
