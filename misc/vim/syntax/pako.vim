@@ -4,6 +4,7 @@ endif
 
 syn case match
 
+syn keyword     pakoDirective         import
 syn keyword     pakoDirective         module
 syn keyword     pakoDeclaration       var
 
