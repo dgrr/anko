@@ -1,4 +1,4 @@
-module github.com/dgrr/pako/v0.2.1
+module github.com/dgrr/pako/v0.2.2
 
 go 1.14
 
