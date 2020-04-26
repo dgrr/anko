@@ -11,17 +11,17 @@ import (
 
 const (
 	goodSrc string = `
-var fmt = import("fmt")
+import fmt
 
 a = "1"
 b = 2
 m = {}
-func testA(arg1, arg2, arg3) {
+fn testA(arg1, arg2, arg3) {
 	v, ok = m["foo"]
 	return "A" + arg1 + arg2 + arg3
 }
 
-func Main(arg1) {
+fn Main(arg1) {
 	fmt.Println("enter Main")
 	b = testA(1, 2, 3) + Tester()
 
@@ -76,7 +76,7 @@ func Main(arg1) {
 
 	c = make(chan int64)
 
-	go func() {
+	go fn() {
 	  c <- 1
 	  c <- 2
 	  c <- 3
@@ -100,7 +100,7 @@ func Main(arg1) {
 	x = new(string)
 	fmt.Println(x)
 
-	var f = func() {
+	var f = fn() {
 		return "foo"
 	}
 	x = f()[0:1]
@@ -108,11 +108,11 @@ func Main(arg1) {
 	fmt.Println(x == y ? true : false)
 }
 
-func Tester() {
+fn Tester() {
 	return "YES"
 }
 
-func testLen() {
+fn testLen() {
 	return len("test")
 }
 
@@ -168,13 +168,13 @@ func TestWalk(t *testing.T) {
 
 func Example_astWalk() {
 	src := `
-var fmt = import("fmt")
+import fmt
 
-func TestFunc(arg1, arg2, arg3) {
+fn TestFunc(arg1, arg2, arg3) {
 	return (arg1 + arg2) * arg3
 }
 
-func Main() {
+fn Main() {
 	return TestFunc(1, 2, 3) + BuiltinFuncX(1, 2, 3)
 }
 

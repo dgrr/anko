@@ -46,6 +46,7 @@ func walkStmt(stmt ast.Stmt, f WalkFunc) error {
 		return err
 	}
 	switch stmt := stmt.(type) {
+	case *ast.ImportStmt:
 	case *ast.StmtsStmt:
 		if err := walkStmts(stmt.Stmts, f); err != nil {
 			return err
@@ -217,8 +218,6 @@ func walkExpr(expr ast.Expr, f WalkFunc) error {
 			return err
 		}
 		return walkExpr(expr.RHS, f)
-	case *ast.ImportExpr:
-		return walkExpr(expr.Name, f)
 	case *ast.MakeExpr:
 		if err := walkExpr(expr.LenExpr, f); err != nil {
 			return err
