@@ -53,12 +53,12 @@ go get github.com/dgrr/pako
 go install github.com/dgrr/pako
 ```
 
-### Running an Anko script file named script.ank
+### Running an Pako script file named script.ank
 ```
-./anko script.ank
+./pako script.pak
 ```
 
-## Anko Script Quick Start
+## Pako Script Quick Start
 ```
 // declare variables
 x = 1
@@ -114,7 +114,7 @@ The master branch language and API may change at any time.
 To mitigate breaking changes, please use tagged branches. New tagged branches will be created for breaking changes.
 
 
-## Author
+## Original author
 
 Yasuhiro Matsumoto (a.k.a mattn)
 
