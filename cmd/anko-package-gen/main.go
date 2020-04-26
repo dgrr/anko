@@ -103,7 +103,7 @@ func main() {
 			keys = append(keys, k)
 		}
 		sort.Strings(keys)
-		fmt.Printf(`// Package %s implements %s interface for anko script.
+		fmt.Printf(`// Package %s implements %s interface for pako script.
 package %s
 
 import (
