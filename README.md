@@ -8,6 +8,13 @@ Pako is a scriptable interpreter written in Go.
 
 # BEWARE! THIS IS A FORK OF THE ORIGINAL ANKO. THIS WILL BE A DIFFERENT LANGUAGE.
 
+# Pako features
+
+- Import directives with local imports. Controlled by [Env.Import](https://godoc.org/github.com/dgrr/pako/env#ImportFrom)
+- Load function controlled by [Env.LoadFrom](https://godoc.org/github.com/dgrr/pako/env#LoadFrom)
+- `?` operator to ignore errors.
+- Strict lvalue and rvalue assignment.
+- Value unpacking/ignoring. Using ()
 
 ## Usage Example - Embedded
 

@@ -1,3 +1,5 @@
+#!pako
+
 import .mylib as s
 
 s.CallMe()
