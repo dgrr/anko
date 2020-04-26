@@ -78,8 +78,8 @@ func Import(e *env.Env) *env.Env {
 			body string
 			err  error
 		)
-		if e.Loader != nil {
-			body, err = e.Loader.Load(s)
+		if e.Load != nil {
+			body, err = e.Load(s)
 		} else {
 			d, e := ioutil.ReadFile(s)
 			body, err = string(d), e

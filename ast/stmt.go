@@ -24,8 +24,9 @@ type ExprStmt struct {
 
 type ImportStmt struct {
 	StmtImpl
-	Name Expr // can be MemberExpr or IdentExpr
-	As   string
+	Name  Expr // can be MemberExpr or IdentExpr
+	Local bool
+	As    string
 }
 
 // IfStmt provide "if/else" statement.

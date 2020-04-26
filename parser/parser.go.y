@@ -268,9 +268,21 @@ stmt_import :
     $$.SetPosition($1.Position())
   }
   |
+  IMPORT '.' expr
+  {
+    $$ = &ast.ImportStmt{Name: $3, Local: true}
+    $$.SetPosition($1.Position())
+  }
+  |
   IMPORT expr AS IDENT
   {
     $$ = &ast.ImportStmt{Name: $2, As: $4.Lit}
+    $$.SetPosition($1.Position())
+  }
+  |
+  IMPORT '.' expr AS IDENT
+  {
+    $$ = &ast.ImportStmt{Name: $3, As: $5.Lit, Local: true}
     $$.SetPosition($1.Position())
   }
 

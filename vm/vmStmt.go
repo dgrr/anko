@@ -148,29 +148,52 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			}
 		}
 
-		methods, ok := env.Packages[name]
-		if !ok {
-			runInfo.err = newStringError(stmt, "package not found: "+name)
-			return
-		}
-		pack := runInfo.env.NewEnv()
-		for methodName, methodValue := range methods {
-			err = pack.DefineValue(methodName, methodValue)
-			if err != nil {
-				runInfo.err = newStringError(stmt, "import DefineValue error: "+err.Error())
+		var pack *env.Env
+		if stmt.Local {
+			if runInfo.env.Import == nil {
+				runInfo.err = newStringError(stmt, "cannot import local packages")
+			} else {
+				pack, runInfo.err = runInfo.env.Import(name)
+				if runInfo.err != nil {
+					switch e := runInfo.err.(type) {
+					case *Error:
+						runInfo.err = newStringError(stmt, fmt.Sprintf("error executing %s: '%s at %d'", name, e, e.Pos.Line))
+					case *parser.Error:
+						runInfo.err = newStringError(stmt, fmt.Sprintf("error reading %s: '%s at %d'", name, e.Message, e.Pos.Line))
+					default:
+						runInfo.err = newStringError(stmt, "local package not found: "+name)
+					}
+				}
+			}
+			if runInfo.err != nil {
 				return
 			}
-		}
-		types, ok := env.PackageTypes[name]
-		if ok {
-			for typeName, typeValue := range types {
-				err = pack.DefineReflectType(typeName, typeValue)
+		} else {
+			methods, ok := env.Packages[name]
+			if !ok {
+				runInfo.err = newStringError(stmt, "package not found: "+name)
+			}
+
+			pack = runInfo.env.NewEnv()
+			for methodName, methodValue := range methods {
+				err = pack.DefineValue(methodName, methodValue)
 				if err != nil {
-					runInfo.err = newStringError(stmt, "import DefineReflectType error: "+err.Error())
+					runInfo.err = newStringError(stmt, "import DefineValue error: "+err.Error())
 					return
 				}
 			}
+			types, ok := env.PackageTypes[name]
+			if ok {
+				for typeName, typeValue := range types {
+					err = pack.DefineReflectType(typeName, typeValue)
+					if err != nil {
+						runInfo.err = newStringError(stmt, "import DefineReflectType error: "+err.Error())
+						return
+					}
+				}
+			}
 		}
+
 		runInfo.env.Define(asv, pack)
 
 	// VarStmt
