@@ -17,7 +17,9 @@ type (
 
 	// Env is the environment needed for a VM to run in.
 	Env struct {
-		Load           LoadFrom
+		// Load will be executed every time there's a call from `load()` in a script.
+		Load LoadFrom
+		// Import will be called every time there's a local import ex: import .mylib
 		Import         ImportFrom
 		rwMutex        *sync.RWMutex
 		parent         *Env
@@ -68,6 +70,10 @@ var (
 // Must return the body of the script or an error.
 type LoadFrom func(string) (string, error)
 
+// Import implements a script importing.
+//
+// The function will get the package name and must return
+// the env of the executed script or an error.
 type ImportFrom func(string) (*Env, error)
 
 // NewEnv creates new global scope.
