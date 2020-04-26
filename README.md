@@ -1,11 +1,11 @@
-# Anko
+# Pako
 
 [![GoDoc Reference](https://godoc.org/github.com/dgrr/pako/vm?status.svg)](http://godoc.org/github.com/dgrr/pako/vm)
 [![Build Status](https://travis-ci.org/dgrr/pako.svg?branch=master)](https://travis-ci.org/dgrr/pako)
 [![Financial Contributors on Open Collective](https://opencollective.com/mattn-anko/all/badge.svg?label=financial+contributors)](https://opencollective.com/mattn-anko) [![Coverage](https://codecov.io/gh/dgrr/pako/branch/master/graph/badge.svg)](https://codecov.io/gh/dgrr/pako)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dgrr/pako)](https://goreportcard.com/report/github.com/dgrr/pako)
 
-Anko is a scriptable interpreter written in Go.
+Pako is a scriptable interpreter written in Go.
 
 # BEWARE! THIS IS A FORK OF THE ORIGINAL ANKO. THIS WILL BE A DIFFERENT LANGUAGE.
 
