@@ -74,10 +74,20 @@ func Import(e *env.Env) *env.Env {
 	})
 
 	e.Define("load", func(s string) interface{} {
-		body, err := ioutil.ReadFile(s)
+		var (
+			body string
+			err  error
+		)
+		if e.Loader != nil {
+			body, err = e.Loader.Load(s)
+		} else {
+			d, e := ioutil.ReadFile(s)
+			body, err = string(d), e
+		}
 		if err != nil {
 			panic(err)
 		}
+
 		scanner := new(parser.Scanner)
 		scanner.Init(string(body))
 		stmts, err := parser.Parse(scanner)
@@ -92,6 +102,7 @@ func Import(e *env.Env) *env.Env {
 		if err != nil {
 			panic(err)
 		}
+
 		return rv
 	})
 

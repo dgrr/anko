@@ -17,6 +17,7 @@ type (
 
 	// Env is the environment needed for a VM to run in.
 	Env struct {
+		Loader         Loader
 		rwMutex        *sync.RWMutex
 		parent         *Env
 		values         map[string]reflect.Value
@@ -59,6 +60,14 @@ var (
 	// ErrSymbolContainsDot symbol contains .
 	ErrSymbolContainsDot = errors.New("symbol contains '.'")
 )
+
+// Loader implements an import function that will be called
+// when a user calls the function `load`.
+type Loader interface {
+	// Load will get the script that should be imported as parameter
+	// and must return the script or an error
+	Load(string) (string, error)
+}
 
 // NewEnv creates new global scope.
 func NewEnv() *Env {

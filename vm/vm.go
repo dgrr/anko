@@ -50,12 +50,28 @@ func getSizeOf(v reflect.Value) int64 {
 	case reflect.Slice, reflect.Array,
 		reflect.Chan, reflect.String, reflect.Map:
 		x = 0
-		for i := 0; i < v.Len(); i++ {
-			vl := v.Index(i)
-			for vl.Type() == reflectValueType {
-				vl = v.Interface().(reflect.Value)
+		if v.Kind() == reflect.Map {
+			it := v.MapRange()
+			for it.Next() {
+				vl := it.Key()
+				for vl.Type() == reflectValueType {
+					vl = v.Interface().(reflect.Value)
+				}
+				x += int(vl.Type().Size())
+				vl = it.Value()
+				for vl.Type() == reflectValueType {
+					vl = v.Interface().(reflect.Value)
+				}
+				x += int(vl.Type().Size())
 			}
-			x += int(vl.Type().Size())
+		} else {
+			for i := 0; i < v.Len(); i++ {
+				vl := v.Index(i)
+				for vl.Type() == reflectValueType {
+					vl = v.Interface().(reflect.Value)
+				}
+				x += int(vl.Type().Size())
+			}
 		}
 	}
 
@@ -63,11 +79,11 @@ func getSizeOf(v reflect.Value) int64 {
 }
 
 func (runInfo *runInfoStruct) allocMemUsage(v reflect.Value) {
-	runInfo.memUsage += getSizeOf(v)
+	//runInfo.memUsage += getSizeOf(v)
 }
 
 func (runInfo *runInfoStruct) deallocMemUsage(v reflect.Value) {
-	runInfo.memUsage -= getSizeOf(v)
+	//runInfo.memUsage -= getSizeOf(v)
 }
 
 var (
