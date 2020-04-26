@@ -28,20 +28,20 @@ func TestRunNonInteractiveFile(t *testing.T) {
 	testDir := filepath.Join(filepath.Dir(filename), "core", "testdata")
 	setupEnv()
 
-	file = filepath.Join(testDir, "not-found.ank")
+	file = filepath.Join(testDir, "not-found.pak")
 	exitCode := runNonInteractive()
 	if exitCode != 2 {
 		t.Fatalf("exitCode - received: %v - expected: %v", exitCode, 2)
 	}
 
-	file = filepath.Join(testDir, "broken.ank")
+	file = filepath.Join(testDir, "broken.pak")
 	exitCode = runNonInteractive()
 	os.Args = []string{os.Args[0]}
 	if exitCode != 4 {
 		t.Fatalf("exitCode - received: %v - expected: %v", exitCode, 4)
 	}
 
-	file = filepath.Join(testDir, "test.ank")
+	file = filepath.Join(testDir, "test.pak")
 	exitCode = runNonInteractive()
 	os.Args = []string{os.Args[0]}
 	if exitCode != 0 {
