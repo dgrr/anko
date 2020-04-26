@@ -20,8 +20,8 @@ hi def link     pakoConditional       Conditional
 hi def link     pakoLabel             Label
 hi def link     pakoRepeat            Repeat
 
-syn match       pakoDeclaration       /\<func\>/
-syn match       pakoDeclaration       /^func\>/
+syn match       pakoDeclaration       /\<fn\>/
+syn match       pakoDeclaration       /^fn\>/
 
 syn keyword     pakoCast              bytes runes string
 
