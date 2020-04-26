@@ -1,0 +1,46 @@
+import fmt
+
+S += 20
+
+fmt.Println("s[0] =", S[0])
+
+fmt.Println(S)
+
+S++
+
+fmt.Println(S)
+
+S--
+
+fmt.Println(S)
+
+S *= 2
+
+fmt.Println(S)
+
+S = S >> 1
+
+fmt.Println(S)
+
+fmt.Println(S%2)
+
+fmt.Println(S)
+
+if S {
+  fmt.Println("S!!")
+}
+
+S = 0
+if S {
+  fmt.Println("S!!!")
+}
+
+S = -1
+if S {
+  fmt.Println("S!!!!!")
+}
+
+s = new(Some)
+s = 10
+
+fmt.Println(s)
