@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrr/pako/ast"
 	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/v0.2.1/over"
 )
 
 // Options provides options to run VM with
@@ -40,6 +41,13 @@ type (
 		err     error
 	}
 )
+
+func getUnderlayedType(v reflect.Value) interface{} {
+	for v.Type() == reflectValueType {
+		v = v.Interface().(reflect.Value)
+	}
+	return v.Interface()
+}
 
 func getSizeOf(v reflect.Value) int64 {
 	for v.Type() == reflectValueType {
@@ -197,6 +205,11 @@ func equal(lhsV, rhsV reflect.Value) bool {
 	}
 	if rhsV.Kind() == reflect.Interface || rhsV.Kind() == reflect.Ptr {
 		rhsV = rhsV.Elem()
+	}
+	if lhsV.Type().Implements(over.ComparisonReflectType) {
+		lhv := lhsV.Interface().(over.Comparison)
+		v := getUnderlayedType(rhsV)
+		return lhv.Equals(v) == nil
 	}
 
 	// Compare a string and a number.

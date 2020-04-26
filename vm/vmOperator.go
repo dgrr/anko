@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dgrr/pako/ast"
+	"github.com/dgrr/pako/v0.2.1/over"
 )
 
 // invokeOperator evaluates one Operator.
@@ -81,12 +82,52 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "!=":
 			runInfo.rv = reflect.ValueOf(!equal(lhsV, runInfo.rv))
 		case "<":
+			if lhsV.Type().Implements(over.ComparisonReflectType) {
+				lhv := lhsV.Interface().(over.Comparison)
+				v := getUnderlayedType(runInfo.rv)
+				runInfo.err = lhv.Less(v)
+				if runInfo.err == nil {
+					runInfo.rv = trueValue
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toFloat64(lhsV) < toFloat64(runInfo.rv))
 		case "<=":
+			if lhsV.Type().Implements(over.ComparisonReflectType) {
+				lhv := lhsV.Interface().(over.Comparison)
+				v := getUnderlayedType(runInfo.rv)
+				runInfo.err = lhv.LessEquals(v)
+				if runInfo.err == nil {
+					runInfo.rv = trueValue
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toFloat64(lhsV) <= toFloat64(runInfo.rv))
 		case ">":
+			if lhsV.Type().Implements(over.ComparisonReflectType) {
+				lhv := lhsV.Interface().(over.Comparison)
+				v := getUnderlayedType(runInfo.rv)
+				runInfo.err = lhv.Greater(v)
+				if runInfo.err == nil {
+					runInfo.rv = trueValue
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toFloat64(lhsV) > toFloat64(runInfo.rv))
 		case ">=":
+			if lhsV.Type().Implements(over.ComparisonReflectType) {
+				lhv := lhsV.Interface().(over.Comparison)
+				v := getUnderlayedType(runInfo.rv)
+				runInfo.err = lhv.GreaterEquals(v)
+				if runInfo.err == nil {
+					runInfo.rv = trueValue
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toFloat64(lhsV) >= toFloat64(runInfo.rv))
 		default:
 			runInfo.err = newStringError(operator, "unknown operator")
@@ -116,6 +157,16 @@ func (runInfo *runInfoStruct) invokeOperator() {
 
 		switch operator.Operator {
 		case "+":
+			if lhsV.Type().Implements(over.AddReflectType) {
+				adder := lhsV.Interface().(over.Add)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = adder.Add(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			lhsKind := lhsV.Kind()
 			rhsKind := runInfo.rv.Kind()
 
@@ -153,6 +204,16 @@ func (runInfo *runInfoStruct) invokeOperator() {
 			}
 
 		case "-":
+			if lhsV.Type().Implements(over.AddReflectType) {
+				adder := lhsV.Interface().(over.Add)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = adder.Sub(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			switch lhsV.Kind() {
 			case reflect.Float64, reflect.Float32:
 				runInfo.rv = reflect.ValueOf(toFloat64(lhsV) - toFloat64(runInfo.rv))
@@ -166,6 +227,15 @@ func (runInfo *runInfoStruct) invokeOperator() {
 			}
 
 		case "|":
+			if lhsV.Type().Implements(over.AddReflectType) {
+				adder := lhsV.Interface().(over.Add)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = adder.Or(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) | toInt64(runInfo.rv))
 		default:
 			runInfo.err = newStringError(operator, "unknown operator")
@@ -195,6 +265,16 @@ func (runInfo *runInfoStruct) invokeOperator() {
 
 		switch operator.Operator {
 		case "*":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.Mul(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			if lhsV.Kind() == reflect.String && (runInfo.rv.Kind() == reflect.Int || runInfo.rv.Kind() == reflect.Int32 || runInfo.rv.Kind() == reflect.Int64) {
 				runInfo.rv = reflect.ValueOf(strings.Repeat(toString(lhsV), int(toInt64(runInfo.rv))))
 				return
@@ -205,14 +285,64 @@ func (runInfo *runInfoStruct) invokeOperator() {
 			}
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) * toInt64(runInfo.rv))
 		case "/":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.Div(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toFloat64(lhsV) / toFloat64(runInfo.rv))
 		case "%":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.Mod(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) % toInt64(runInfo.rv))
 		case ">>":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.Right(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) >> uint64(toInt64(runInfo.rv)))
 		case "<<":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.Left(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) << uint64(toInt64(runInfo.rv)))
 		case "&":
+			if lhsV.Type().Implements(over.MultiplyReflectType) {
+				mul := lhsV.Interface().(over.Multiply)
+				v := getUnderlayedType(runInfo.rv)
+				v, runInfo.err = mul.And(v)
+				if runInfo.err == nil {
+					runInfo.rv = reflect.ValueOf(v)
+				}
+				return
+			}
+
 			runInfo.rv = reflect.ValueOf(toInt64(lhsV) & toInt64(runInfo.rv))
 
 		default:

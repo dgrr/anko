@@ -6,6 +6,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/dgrr/pako/over"
 )
 
 // toString converts all reflect.Value-s into string.
@@ -34,9 +36,15 @@ func toBool(v reflect.Value) bool {
 // with parseBool https://golang.org/pkg/strconv/#ParseBool
 // and is not 0.0
 func tryToBool(v reflect.Value) (bool, error) {
+	if v.Type().Implements(over.BinaryReflectType) {
+		op := v.Interface().(over.Binary)
+		return op.Binary(), nil
+	}
+
 	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
 		v = v.Elem()
 	}
+
 	switch v.Kind() {
 	case reflect.Float64, reflect.Float32:
 		return v.Float() != 0, nil

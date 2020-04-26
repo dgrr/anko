@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+
+	"github.com/dgrr/pako/v0.2.1/over"
 )
 
 // define
@@ -60,12 +62,27 @@ func (e *Env) SetValue(symbol string, value reflect.Value) error {
 	return err
 }
 
+var reflectValueType = reflect.TypeOf(reflect.Value{})
+
+func getUnderlayedType(v reflect.Value) interface{} {
+	for v.Type() == reflectValueType {
+		v = v.Interface().(reflect.Value)
+	}
+	return v.Interface()
+}
+
 // SetValueEvict returns the last value.
 func (e *Env) SetValueEvict(symbol string, value reflect.Value) (reflect.Value, error) {
 	e.rwMutex.RLock()
 	v, ok := e.values[symbol]
 	e.rwMutex.RUnlock()
 	if ok {
+		if v.Type().Implements(over.AssignReflectType) {
+			a := v.Interface().(over.Assign)
+			vl := getUnderlayedType(value)
+			return v, a.Assign(vl)
+		}
+
 		e.rwMutex.Lock()
 		e.values[symbol] = value
 		e.rwMutex.Unlock()

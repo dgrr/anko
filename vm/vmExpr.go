@@ -5,6 +5,7 @@ import (
 
 	"github.com/dgrr/pako/ast"
 	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/v0.2.1/over"
 )
 
 // invokeExpr evaluates one expression.
@@ -486,6 +487,11 @@ func (runInfo *runInfoStruct) invokeExpr() {
 
 		if runInfo.rv.Kind() == reflect.Interface && !runInfo.rv.IsNil() {
 			runInfo.rv = runInfo.rv.Elem()
+		}
+
+		if runInfo.rv.Type().Implements(over.LenReflectType) {
+			v := runInfo.rv.Interface().(over.Len)
+			runInfo.rv = reflect.ValueOf(v.Len())
 		}
 
 		switch runInfo.rv.Kind() {

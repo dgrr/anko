@@ -139,7 +139,7 @@ func Example_vmFunctionsOutside() {
 
 	/*
 	   // the following function would be uncommented
-	   func testFunc1(a interface{}) int {
+	   fn testFunc1(a interface{}) int {
 	   	b, ok := a.([]interface{})
 	   	if ok {
 	   		return len(b)
