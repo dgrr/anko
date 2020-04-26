@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/dgrr/pako/ast"
-	"github.com/dgrr/pako/v0.2.1/over"
+	"github.com/dgrr/pako/over"
 )
 
 // invokeOperator evaluates one Operator.

@@ -8,7 +8,7 @@ import (
 
 	"github.com/dgrr/pako/ast"
 	"github.com/dgrr/pako/env"
-	"github.com/dgrr/pako/v0.2.1/over"
+	"github.com/dgrr/pako/over"
 )
 
 // Options provides options to run VM with
