@@ -23,10 +23,11 @@ Pako is a scriptable interpreter written in Go.
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"reflect"
-  "strconv"
+	"strconv"
 
 	"github.com/dgrr/pako/env"
 	"github.com/dgrr/pako/vm"
@@ -34,13 +35,13 @@ import (
 
 func main() {
 	env.Packages["my_pkg"] = map[string]reflect.Value{
-    "print": reflect.ValueOf(fmt.Println),
+		"print": reflect.ValueOf(fmt.Println),
 		"getStr": reflect.ValueOf(func(n int64) (string, error) {
-      if n < 0 {
-        return "", errors.New("Cannot represent negative numbers")
-      }
-      return strconv.FormatInt(n, 10), nil
-    }),
+			if n < 0 {
+				return "", errors.New("Cannot represent negative numbers")
+			}
+			return strconv.FormatInt(n, 10), nil
+		}),
 	}
 	e := env.NewEnv()
 
@@ -55,8 +56,8 @@ func main() {
 		log.Fatalf("Execute error: %v\n", err)
 	}
 	// output:
-  // My string representation: 20
-  // Now should panic!!!
+	// My string representation: 20
+	// Now should panic!!!
 }
 ```
 
