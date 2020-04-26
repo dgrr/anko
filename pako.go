@@ -18,7 +18,7 @@ import (
 	"github.com/dgrr/pako/vm"
 )
 
-const version = "0.2"
+const version = "0.2.2"
 
 var (
 	flagExecute string

@@ -9,7 +9,7 @@ before_install:
   - go get -u github.com/haya14busa/goverage
 
 script:
-  - goverage -v -coverprofile=coverage.txt -covermode=count ./vm ./env . ./ast/astutil
+  - GO111MODULE=off goverage -v -coverprofile=coverage.txt -covermode=count ./vm ./env . ./ast/astutil
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
