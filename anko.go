@@ -18,7 +18,7 @@ import (
 	"github.com/dgrr/anko/vm"
 )
 
-const version = "0.1.7"
+const version = "0.1.8"
 
 var (
 	flagExecute string
@@ -63,7 +63,25 @@ func parseFlags() {
 func setupEnv() {
 	e = env.NewEnv()
 	e.Define("args", args)
+	e.Import = doImport
 	core.Import(e)
+}
+
+func doImport(pkg string) (*env.Env, error) {
+	e := env.NewEnv()
+	pkg = strings.Replace(pkg, ".", string(os.PathSeparator), -1)
+
+	d, err := ioutil.ReadFile(pkg + ".ank")
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = vm.Execute(e, nil, string(d))
+	if err != nil {
+		return nil, err
+	}
+
+	return e, nil
 }
 
 func runNonInteractive() int {

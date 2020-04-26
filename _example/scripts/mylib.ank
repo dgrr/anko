@@ -1,0 +1,11 @@
+import fmt
+
+fn CallMe() {
+  fmt.Println("I am a lib!!!")
+}
+
+module Some {
+  fn CallMe() {
+    fmt.Println("second call inside a mod!!")
+  }
+}
