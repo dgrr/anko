@@ -15,6 +15,7 @@ Pako is a scriptable interpreter written in Go.
 - `?` operator to ignore errors.
 - Strict lvalue and rvalue assignment.
 - Value unpacking/ignoring. Using ()
+- [Operator override](https://github.com/dgrr/pako/tree/master/_example/programs/override)
 
 ## Usage Example - Embedded
 
