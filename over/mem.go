@@ -2,10 +2,9 @@ package over
 
 import "reflect"
 
-// TODO: Implement
+// TODO: Add support for non-pointers?
+
 type Mem interface {
-	// Make make()
-	Make() (interface{}, error)
 	// New new
 	New() (interface{}, error)
 }
@@ -13,10 +12,6 @@ type Mem interface {
 var MemReflectType = reflect.TypeOf(new(Mem)).Elem()
 
 type MemImpl struct{}
-
-func (m *MemImpl) Make() (interface{}, error) {
-	return nil, ErrMethodNotImplemented
-}
 
 func (m *MemImpl) New() (interface{}, error) {
 	return nil, ErrMethodNotImplemented

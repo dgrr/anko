@@ -453,6 +453,17 @@ func getTypeFromEnv(runInfo *runInfoStruct, typeStruct *ast.TypeStruct) reflect.
 }
 
 func makeValue(t reflect.Type) (reflect.Value, error) {
+	if t.Implements(over.MemReflectType) {
+		var (
+			v   interface{}
+			err error
+		)
+		tl := reflect.New(t).Elem().Interface().(over.Mem)
+		v, err = tl.New()
+
+		return reflect.ValueOf(v), err
+	}
+
 	switch t.Kind() {
 	case reflect.Chan:
 		return reflect.MakeChan(t, 0), nil

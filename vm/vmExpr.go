@@ -295,6 +295,16 @@ func (runInfo *runInfoStruct) invokeExpr() {
 			item = item.Elem()
 		}
 
+		if item.Type().Implements(over.IndexReflectType) {
+			v := item.Interface().(over.Index)
+			vi := getUnderlayedType(runInfo.rv)
+			vi, runInfo.err = v.Index(vi)
+			if runInfo.err == nil {
+				runInfo.rv = reflect.ValueOf(vi)
+			}
+			return
+		}
+
 		switch item.Kind() {
 		case reflect.String, reflect.Slice, reflect.Array:
 			var index int
