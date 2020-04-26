@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 # declare fntion
 fn foo(x){

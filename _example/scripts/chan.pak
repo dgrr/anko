@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 c = make(chan int64)
 

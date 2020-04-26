@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 a = make([]int64, 5)
 

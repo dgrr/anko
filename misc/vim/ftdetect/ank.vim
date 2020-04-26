@@ -1,1 +1,1 @@
-au BufNewFile,BufRead *.ank setlocal filetype=anko
+au BufNewFile,BufRead *.pak setlocal filetype=pako

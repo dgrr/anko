@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 import net.http
 

@@ -4,97 +4,97 @@ endif
 
 syn case match
 
-syn keyword     ankoDirective         module
-syn keyword     ankoDeclaration       var
+syn keyword     pakoDirective         module
+syn keyword     pakoDeclaration       var
 
-hi def link     ankoDirective         Statement
-hi def link     ankoDeclaration       Type
+hi def link     pakoDirective         Statement
+hi def link     pakoDeclaration       Type
 
-syn keyword     ankoStatement         return break continue throw
-syn keyword     ankoConditional       if else switch try catch finally
-syn keyword     ankoLabel             case default
-syn keyword     ankoRepeat            for range
+syn keyword     pakoStatement         return break continue throw
+syn keyword     pakoConditional       if else switch try catch finally
+syn keyword     pakoLabel             case default
+syn keyword     pakoRepeat            for range
 
-hi def link     ankoStatement         Statement
-hi def link     ankoConditional       Conditional
-hi def link     ankoLabel             Label
-hi def link     ankoRepeat            Repeat
+hi def link     pakoStatement         Statement
+hi def link     pakoConditional       Conditional
+hi def link     pakoLabel             Label
+hi def link     pakoRepeat            Repeat
 
-syn match       ankoDeclaration       /\<func\>/
-syn match       ankoDeclaration       /^func\>/
+syn match       pakoDeclaration       /\<func\>/
+syn match       pakoDeclaration       /^func\>/
 
-syn keyword     ankoCast              bytes runes string
+syn keyword     pakoCast              bytes runes string
 
-hi def link     ankoCast              Type
+hi def link     pakoCast              Type
 
-syn keyword     ankoBuiltins          keys len
-syn keyword     ankoBuiltins          println printf print
-syn keyword     ankoConstants         true false nil
+syn keyword     pakoBuiltins          keys len
+syn keyword     pakoBuiltins          println printf print
+syn keyword     pakoConstants         true false nil
 
-hi def link     ankoBuiltins          Keyword
-hi def link     ankoConstants         Keyword
+hi def link     pakoBuiltins          Keyword
+hi def link     pakoConstants         Keyword
 
 " Comments; their contents
-syn keyword     ankoTodo              contained TODO FIXME XXX BUG
-syn cluster     ankoCommentGroup      contains=ankoTodo
-syn region      ankoComment           start="#" end="$" contains=@ankoCommentGroup,@Spell
+syn keyword     pakoTodo              contained TODO FIXME XXX BUG
+syn cluster     pakoCommentGroup      contains=pakoTodo
+syn region      pakoComment           start="#" end="$" contains=@pakoCommentGroup,@Spell
 
-hi def link     ankoComment           Comment
-hi def link     ankoTodo              Todo
+hi def link     pakoComment           Comment
+hi def link     pakoTodo              Todo
 
-" anko escapes
-syn match       ankoEscapeOctal       display contained "\\[0-7]\{3}"
-syn match       ankoEscapeC           display contained +\\[abfnrtv\\'"]+
-syn match       ankoEscapeX           display contained "\\x\x\{2}"
-syn match       ankoEscapeU           display contained "\\u\x\{4}"
-syn match       ankoEscapeBigU        display contained "\\U\x\{8}"
-syn match       ankoEscapeError       display contained +\\[^0-7xuUabfnrtv\\'"]+
+" pako escapes
+syn match       pakoEscapeOctal       display contained "\\[0-7]\{3}"
+syn match       pakoEscapeC           display contained +\\[abfnrtv\\'"]+
+syn match       pakoEscapeX           display contained "\\x\x\{2}"
+syn match       pakoEscapeU           display contained "\\u\x\{4}"
+syn match       pakoEscapeBigU        display contained "\\U\x\{8}"
+syn match       pakoEscapeError       display contained +\\[^0-7xuUabfnrtv\\'"]+
 
-hi def link     ankoEscapeOctal       ankoSpecialString
-hi def link     ankoEscapeC           ankoSpecialString
-hi def link     ankoEscapeX           ankoSpecialString
-hi def link     ankoEscapeU           ankoSpecialString
-hi def link     ankoEscapeBigU        ankoSpecialString
-hi def link     ankoSpecialString     Special
-hi def link     ankoEscapeError       Error
+hi def link     pakoEscapeOctal       pakoSpecialString
+hi def link     pakoEscapeC           pakoSpecialString
+hi def link     pakoEscapeX           pakoSpecialString
+hi def link     pakoEscapeU           pakoSpecialString
+hi def link     pakoEscapeBigU        pakoSpecialString
+hi def link     pakoSpecialString     Special
+hi def link     pakoEscapeError       Error
 
 " Strings and their contents
-syn cluster     ankoStringGroup       contains=ankoEscapeOctal,ankoEscapeC,ankoEscapeX,ankoEscapeU,ankoEscapeBigU,ankoEscapeError
-syn region      ankoString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@ankoStringGroup
-syn region      ankoRawString         start=+`+ end=+`+
+syn cluster     pakoStringGroup       contains=pakoEscapeOctal,pakoEscapeC,pakoEscapeX,pakoEscapeU,pakoEscapeBigU,pakoEscapeError
+syn region      pakoString            start=+"+ skip=+\\\\\|\\"+ end=+"+ contains=@pakoStringGroup
+syn region      pakoRawString         start=+`+ end=+`+
 
-hi def link     ankoString            String
-hi def link     ankoRawString         String
+hi def link     pakoString            String
+hi def link     pakoRawString         String
 
 " Characters; their contents
-syn cluster     ankoCharacterGroup    contains=ankoEscapeOctal,ankoEscapeC,ankoEscapeX,ankoEscapeU,ankoEscapeBigU
-syn region      ankoCharacter         start=+'+ skip=+\\\\\|\\'+ end=+'+ contains=@ankoCharacterGroup
+syn cluster     pakoCharacterGroup    contains=pakoEscapeOctal,pakoEscapeC,pakoEscapeX,pakoEscapeU,pakoEscapeBigU
+syn region      pakoCharacter         start=+'+ skip=+\\\\\|\\'+ end=+'+ contains=@pakoCharacterGroup
 
-hi def link     ankoCharacter         Character
+hi def link     pakoCharacter         Character
 
 " Regions
-syn region      ankoBlock             start="{" end="}" transparent fold
-syn region      ankoParen             start='(' end=')' transparent
+syn region      pakoBlock             start="{" end="}" transparent fold
+syn region      pakoParen             start='(' end=')' transparent
 
 " Integers
-syn match       ankoDecimalInt        "\<\d\+\([Ee]\d\+\)\?\>"
-syn match       ankoHexadecimalInt    "\<0x\x\+\>"
-syn match       ankoOctalInt          "\<0\o\+\>"
-syn match       ankoOctalError        "\<0\o*[89]\d*\>"
+syn match       pakoDecimalInt        "\<\d\+\([Ee]\d\+\)\?\>"
+syn match       pakoHexadecimalInt    "\<0x\x\+\>"
+syn match       pakoOctalInt          "\<0\o\+\>"
+syn match       pakoOctalError        "\<0\o*[89]\d*\>"
 
-hi def link     ankoDecimalInt        Integer
-hi def link     ankoHexadecimalInt    Integer
-hi def link     ankoOctalInt          Integer
+hi def link     pakoDecimalInt        Integer
+hi def link     pakoHexadecimalInt    Integer
+hi def link     pakoOctalInt          Integer
 hi def link     Integer             Number
 
 " Floating point
-syn match       ankoFloat             "\<\d\+\.\d*\([Ee][-+]\d\+\)\?\>"
-syn match       ankoFloat             "\<\.\d\+\([Ee][-+]\d\+\)\?\>"
-syn match       ankoFloat             "\<\d\+[Ee][-+]\d\+\>"
+syn match       pakoFloat             "\<\d\+\.\d*\([Ee][-+]\d\+\)\?\>"
+syn match       pakoFloat             "\<\.\d\+\([Ee][-+]\d\+\)\?\>"
+syn match       pakoFloat             "\<\d\+[Ee][-+]\d\+\>"
 
-hi def link     ankoFloat             Float
-hi def link     ankoImaginary         Number
+hi def link     pakoFloat             Float
+hi def link     pakoImaginary         Number
 
 syn sync minlines=500
 
-let b:current_syntax = "anko"
+let b:current_syntax = "pako"

@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 # toInt with ints, floats, strings, bools
 println("\ntoInt examples:\n===============")

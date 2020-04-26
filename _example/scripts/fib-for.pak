@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 fn fib(n) {
   a, b = 1, 1

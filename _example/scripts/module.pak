@@ -1,4 +1,4 @@
-#!anko
+#!pako
 
 module Foo {
   fn bar1() {
