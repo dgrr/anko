@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/dgrr/anko/ast"
+	"github.com/dgrr/pako/ast"
 )
 
 // funcExpr creates a function that reflect Call can use.

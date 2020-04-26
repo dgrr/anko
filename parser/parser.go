@@ -8,7 +8,7 @@ import __yyfmt__ "fmt"
 //line parser.go.y:2
 
 import (
-	"github.com/dgrr/anko/ast"
+	"github.com/dgrr/pako/ast"
 )
 
 //line parser.go.y:46

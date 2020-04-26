@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/dgrr/anko/env"
+	"github.com/dgrr/pako/env"
 )
 
 func timeGo110() {

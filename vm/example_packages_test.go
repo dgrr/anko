@@ -3,13 +3,13 @@ package vm_test
 import (
 	"log"
 
-	"github.com/dgrr/anko/env"
-	_ "github.com/dgrr/anko/packages"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/env"
+	_ "github.com/dgrr/pako/packages"
+	"github.com/dgrr/pako/vm"
 )
 
 func Example_vmSort() {
-	// _ "github.com/dgrr/anko/packages"
+	// _ "github.com/dgrr/pako/packages"
 
 	e := env.NewEnv()
 
@@ -35,7 +35,7 @@ fmt.Println(a)
 }
 
 func Example_vmRegexp() {
-	// _ "github.com/dgrr/anko/packages"
+	// _ "github.com/dgrr/pako/packages"
 
 	e := env.NewEnv()
 
@@ -79,7 +79,7 @@ fmt.Println(result)
 }
 
 func Example_vmHttp() {
-	// _ "github.com/dgrr/anko/packages"
+	// _ "github.com/dgrr/pako/packages"
 
 	e := env.NewEnv()
 

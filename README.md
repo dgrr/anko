@@ -1,9 +1,9 @@
 # Anko
 
-[![GoDoc Reference](https://godoc.org/github.com/dgrr/anko/vm?status.svg)](http://godoc.org/github.com/dgrr/anko/vm)
-[![Build Status](https://travis-ci.org/dgrr/anko.svg?branch=master)](https://travis-ci.org/dgrr/anko)
-[![Financial Contributors on Open Collective](https://opencollective.com/mattn-anko/all/badge.svg?label=financial+contributors)](https://opencollective.com/mattn-anko) [![Coverage](https://codecov.io/gh/dgrr/anko/branch/master/graph/badge.svg)](https://codecov.io/gh/dgrr/anko)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dgrr/anko)](https://goreportcard.com/report/github.com/dgrr/anko)
+[![GoDoc Reference](https://godoc.org/github.com/dgrr/pako/vm?status.svg)](http://godoc.org/github.com/dgrr/pako/vm)
+[![Build Status](https://travis-ci.org/dgrr/pako.svg?branch=master)](https://travis-ci.org/dgrr/pako)
+[![Financial Contributors on Open Collective](https://opencollective.com/mattn-anko/all/badge.svg?label=financial+contributors)](https://opencollective.com/mattn-anko) [![Coverage](https://codecov.io/gh/dgrr/pako/branch/master/graph/badge.svg)](https://codecov.io/gh/dgrr/pako)
+[![Go Report Card](https://goreportcard.com/badge/github.com/dgrr/pako)](https://goreportcard.com/report/github.com/dgrr/pako)
 
 Anko is a scriptable interpreter written in Go.
 
@@ -20,8 +20,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/vm"
 )
 
 func main() {
@@ -43,15 +43,15 @@ func main() {
 
 More examples are located in the GoDoc:
 
-https://godoc.org/github.com/dgrr/anko/vm
+https://godoc.org/github.com/dgrr/pako/vm
 
 
 ## Usage Example - Command Line
 
 ### Building
 ```
-go get github.com/dgrr/anko
-go install github.com/dgrr/anko
+go get github.com/dgrr/pako
+go install github.com/dgrr/pako
 ```
 
 ### Running an Anko script file named script.ank
@@ -124,7 +124,7 @@ Yasuhiro Matsumoto (a.k.a mattn)
 ### Code Contributors
 
 This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="https://github.com/dgrr/anko/graphs/contributors"><img src="https://opencollective.com/mattn-anko/contributors.svg?width=890&button=false" /></a>
+<a href="https://github.com/dgrr/pako/graphs/contributors"><img src="https://opencollective.com/mattn-anko/contributors.svg?width=890&button=false" /></a>
 
 ### Financial Contributors
 

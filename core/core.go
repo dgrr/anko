@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"reflect"
 
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/parser"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/parser"
+	"github.com/dgrr/pako/vm"
 )
 
 // Import defines core language builtins - keys, range, println,  etc.

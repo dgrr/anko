@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/dgrr/anko/env"
+	"github.com/dgrr/pako/env"
 )
 
 func syncGo19() {

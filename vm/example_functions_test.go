@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/vm"
 )
 
 func Example_vmFunctions() {

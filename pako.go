@@ -11,11 +11,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dgrr/anko/core"
-	"github.com/dgrr/anko/env"
-	_ "github.com/dgrr/anko/packages"
-	"github.com/dgrr/anko/parser"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/core"
+	"github.com/dgrr/pako/env"
+	_ "github.com/dgrr/pako/packages"
+	"github.com/dgrr/pako/parser"
+	"github.com/dgrr/pako/vm"
 )
 
 const version = "0.1.8"

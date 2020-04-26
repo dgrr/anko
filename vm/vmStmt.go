@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dgrr/anko/ast"
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/parser"
+	"github.com/dgrr/pako/ast"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/parser"
 )
 
 // Execute parses script and executes in the specified environment.

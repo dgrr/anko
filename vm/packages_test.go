@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dgrr/anko/env"
-	_ "github.com/dgrr/anko/packages"
+	"github.com/dgrr/pako/env"
+	_ "github.com/dgrr/pako/packages"
 )
 
 func TestImport(t *testing.T) {

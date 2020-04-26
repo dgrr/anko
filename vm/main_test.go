@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/parser"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/parser"
 )
 
 type (

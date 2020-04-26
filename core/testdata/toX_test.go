@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dgrr/anko/internal/testlib"
+	"github.com/dgrr/pako/internal/testlib"
 )
 
 func TestToX(t *testing.T) {

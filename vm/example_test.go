@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgrr/anko/env"
-	"github.com/dgrr/anko/vm"
+	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/vm"
 )
 
 func Example_vmExecuteContext() {
@@ -54,7 +54,7 @@ println("this line should not be printed")
 }
 
 func Example_vmEnvDefine() {
-	// "github.com/dgrr/anko/env"
+	// "github.com/dgrr/pako/env"
 
 	e := env.NewEnv()
 
@@ -112,7 +112,7 @@ println(f)
 }
 
 func Example_vmEnv() {
-	// "github.com/dgrr/anko/env"
+	// "github.com/dgrr/pako/env"
 
 	e := env.NewEnv()
 
@@ -134,7 +134,7 @@ func Example_vmEnv() {
 }
 
 func Example_vmHelloWorld() {
-	// "github.com/dgrr/anko/env"
+	// "github.com/dgrr/pako/env"
 
 	e := env.NewEnv()
 
@@ -156,7 +156,7 @@ println("Hello World :)")
 }
 
 func Example_vmQuickStart() {
-	// "github.com/dgrr/anko/env"
+	// "github.com/dgrr/pako/env"
 
 	e := env.NewEnv()
 

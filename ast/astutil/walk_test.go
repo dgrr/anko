@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dgrr/anko/ast"
-	"github.com/dgrr/anko/parser"
+	"github.com/dgrr/pako/ast"
+	"github.com/dgrr/pako/parser"
 )
 
 const (

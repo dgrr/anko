@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dgrr/anko/env"
+	"github.com/dgrr/pako/env"
 )
 
 func TestReturns(t *testing.T) {
