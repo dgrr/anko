@@ -25,25 +25,37 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+  "strconv"
 
 	"github.com/dgrr/pako/env"
 	"github.com/dgrr/pako/vm"
 )
 
 func main() {
-	env.Packages["fmt"] = map[string]reflect.Value{
-		"print": reflect.ValueOf(fmt.Println),
+	env.Packages["my_pkg"] = map[string]reflect.Value{
+    "print": reflect.ValueOf(fmt.Println),
+		"getStr": reflect.ValueOf(func(n int64) (string, error) {
+      if n < 0 {
+        return "", errors.New("Cannot represent negative numbers")
+      }
+      return strconv.FormatInt(n, 10), nil
+    }),
 	}
 	e := env.NewEnv()
 
-	script := `import fmt
-             fmt.print("Hello World :)")`
+	script := `import my_pkg as pkg
+             str = pkg.getStr(20)?
+             pkg.print("My string representation:", str)
+             pkg.print("Now should panic!!!")
+             pkg.getStr(-1)?`
 
 	_, err := vm.Execute(e, nil, script)
 	if err != nil {
 		log.Fatalf("Execute error: %v\n", err)
 	}
-	// output: Hello World :)
+	// output:
+  // My string representation: 20
+  // Now should panic!!!
 }
 ```
 
@@ -107,7 +119,7 @@ println(a.A) // 4
 println(a.B) // 5.5
 
 // function
-func a (x) {
+fn a (x) {
 	println(x + 1)
 }
 a(5) // 6
