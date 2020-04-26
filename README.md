@@ -1,7 +1,7 @@
 # Pako
 
 [![GoDoc Reference](https://godoc.org/github.com/dgrr/pako/vm?status.svg)](http://godoc.org/github.com/dgrr/pako/vm)
-[![Build Status](https://travis-ci.org/dgrr/pako.svg?branch=master)](https://travis-ci.org/dgrr/pako)
+[![Build Status](https://travis-ci.com/dgrr/pako.svg?branch=master)](https://travis-ci.org/dgrr/pako)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dgrr/pako)](https://goreportcard.com/report/github.com/dgrr/pako)
 
 Pako is a scriptable interpreter written in Go.
@@ -12,7 +12,7 @@ Pako is a scriptable interpreter written in Go.
 
 - Import directives with local imports. Controlled by [Env.Import](https://godoc.org/github.com/dgrr/pako/env#ImportFrom)
 - Load function controlled by [Env.LoadFrom](https://godoc.org/github.com/dgrr/pako/env#LoadFrom)
-- `?` operator to ignore errors.
+- `?` operator to handle return values easily.
 - Strict lvalue and rvalue assignment.
 - Value unpacking/ignoring. Using ()
 - [Operator override](https://github.com/dgrr/pako/tree/master/_example/programs/override)
