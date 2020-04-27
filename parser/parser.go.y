@@ -241,10 +241,10 @@ stmt :
 	{
 		$$ = $1
 	}
-  | stmt_import
-  {
-    $$ = $1
-  }
+	| stmt_import
+	{
+		$$ = $1
+	}
 	| expr
 	{
 		$$ = &ast.ExprStmt{Expr: $1}
@@ -262,35 +262,35 @@ stmt_var_or_lets :
 	}
 
 stmt_import :
-  IMPORT expr
-  {
-    $$ = &ast.ImportStmt{Name: $2}
-    $$.SetPosition($1.Position())
-  }
-  |
-  IMPORT '.' expr
-  {
-    $$ = &ast.ImportStmt{Name: $3, Local: true}
-    $$.SetPosition($1.Position())
-  }
-  |
-  IMPORT expr AS IDENT
-  {
-    $$ = &ast.ImportStmt{Name: $2, As: $4.Lit}
-    $$.SetPosition($1.Position())
-  }
-  |
-  IMPORT '.' expr AS IDENT
-  {
-    $$ = &ast.ImportStmt{Name: $3, As: $5.Lit, Local: true}
-    $$.SetPosition($1.Position())
-  }
+	IMPORT expr
+	{
+		$$ = &ast.ImportStmt{Name: $2}
+		$$.SetPosition($1.Position())
+	}
+	|
+	IMPORT '.' expr
+	{
+		$$ = &ast.ImportStmt{Name: $3, Local: true}
+		$$.SetPosition($1.Position())
+	}
+	|
+	IMPORT expr AS IDENT
+	{
+		$$ = &ast.ImportStmt{Name: $2, As: $4.Lit}
+		$$.SetPosition($1.Position())
+	}
+	|
+	IMPORT '.' expr AS IDENT
+	{
+		$$ = &ast.ImportStmt{Name: $3, As: $5.Lit, Local: true}
+		$$.SetPosition($1.Position())
+	}
 
 stmt_var :
 	VAR expr_idents '=' exprs
 	{
-    $$ = &ast.VarStmt{Names: $2, Exprs: $4}
-    $$.SetPosition($1.Position())
+		$$ = &ast.VarStmt{Names: $2, Exprs: $4}
+    		$$.SetPosition($1.Position())
 	}
 
 stmt_lets :
@@ -311,29 +311,29 @@ stmt_lets :
 			$$ = &ast.LetsStmt{LHSS: $1, RHSS: $3}
 		}
 	}
-  | '(' expr_idents ')' '=' exprs
-  {
-    yyS := make([]ast.Expr, len($2))
-    for i, yyv := range $2 {
-      yyS[i] = &ast.IdentExpr{Lit: yyv}
-    }
-    $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $5, Unpack: true}
+	| '(' expr_idents ')' '=' exprs
+	{
+		yyS := make([]ast.Expr, len($2))
+		for i, yyv := range $2 {
+			yyS[i] = &ast.IdentExpr{Lit: yyv}
+		}
+		$$ = &ast.LetsStmt{LHSS: yyS, RHSS: $5, Unpack: true}
 	}
-  |
-  exprs AS '(' expr_idents ')'
-  {
-    yyS := make([]ast.Expr, len($4))
-    for i, yyv := range $4 {
-      yyS[i] = &ast.IdentExpr{Lit: yyv}
-    }
-    $$ = &ast.LetsStmt{LHSS: yyS, RHSS: $1, Unpack: true}
-    $$.SetPosition($2.Position())
-  }
-  |
-  exprs AS exprs
-  {
-    // for maps
-    if len($3) == 2 && len($1) == 1 {
+	|
+	exprs AS '(' expr_idents ')'
+	{
+		yyS := make([]ast.Expr, len($4))
+		for i, yyv := range $4 {
+		yyS[i] = &ast.IdentExpr{Lit: yyv}
+		}
+		$$ = &ast.LetsStmt{LHSS: yyS, RHSS: $1, Unpack: true}
+		$$.SetPosition($2.Position())
+	}
+	|
+	exprs AS exprs
+	{
+		// for maps
+		if len($3) == 2 && len($1) == 1 {
 			if _, ok := $1[0].(*ast.ItemExpr); ok {
 				$$ = &ast.LetMapItemStmt{LHSS: $3, RHS: $1[0]}
 			} else {
@@ -342,8 +342,8 @@ stmt_lets :
 		} else {
 			$$ = &ast.LetsStmt{LHSS: $3, RHSS: $1}
 		}
-    $$.SetPosition($2.Position())
-  }
+		$$.SetPosition($2.Position())
+	}
 	| expr EQOPCHAN expr
 	{
 		$$ = &ast.ChanStmt{LHS: $1, RHS: $3}
@@ -357,12 +357,11 @@ stmt_lets :
 			$$.SetPosition(chanStmt.LHS.Position())
 		} else if len($1) < 2 {
 			yylex.Error("missing expressions on left side of channel operator")
-      // TODO: return 1
+			// TODO: return 1
 			$$ = &ast.ChanStmt{RHS: $3}
 			$$.SetPosition($2.Position())
 		}
 	}
-
 stmt_if :
 	IF expr '{' compstmt '}'
 	{
@@ -379,7 +378,7 @@ stmt_if :
 		ifStmt := $1.(*ast.IfStmt)
 		if ifStmt.Else != nil {
 			yylex.Error("multiple else statement")
-      return 1
+			return 1
 		}
 		ifStmt.Else = $4
 	}
@@ -394,14 +393,14 @@ stmt_for :
 	{
 		if len($2) < 1 {
 			yylex.Error("missing identifier")
-      return 1
+			return 1
 		}
-    if len($2) > 2 {
+		if len($2) > 2 {
 			yylex.Error("too many identifiers")
-      return 1
+			return 1
 		}
-    $$ = &ast.ForStmt{Vars: $2, Value: $4, Stmt: $6}
-    $$.SetPosition($1.Position())
+		$$ = &ast.ForStmt{Vars: $2, Value: $4, Stmt: $6}
+		$$.SetPosition($1.Position())
 	}
 	| FOR expr '{' compstmt '}'
 	{
@@ -618,18 +617,18 @@ expr :
 	}
 	| expr '(' exprs VARARG ')' '?'
 	{
-    $$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3, VarArg: true}
-    $$.SetPosition($1.Position())
+		$$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3, VarArg: true}
+		$$.SetPosition($1.Position())
 	}
 	| expr '(' exprs ')'
 	{
 		$$ = &ast.AnonCallExpr{Expr: $1, SubExprs: $3}
 		$$.SetPosition($1.Position())
 	}
-  | expr '(' exprs ')' '?'
+	| expr '(' exprs ')' '?'
 	{
-    $$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3}
-    $$.SetPosition($1.Position())
+		$$ = &ast.AnonCallErrExpr{Expr: $1, SubExprs: $3}
+		$$.SetPosition($1.Position())
 	}
 	| expr_ident '[' expr ']'
 	{
@@ -724,7 +723,7 @@ expr_idents :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
-      return 1
+			return 1
 		}
 		$$ = append($1, $4.Lit)
 	}
@@ -738,10 +737,10 @@ type_data :
 	{
 		if $1.Kind != ast.TypeDefault {
 			yylex.Error("not type default")
-      return 1
-    }
-    $1.Env = append($1.Env, $1.Name)
-    $1.Name = $3.Lit
+			return 1
+		}
+		$1.Env = append($1.Env, $1.Name)
+		$1.Name = $3.Lit
 	}
 	| '*' type_data
 	{
@@ -777,27 +776,27 @@ type_data :
 	}
 	| STRUCT '{' opt_newlines type_data_struct opt_newlines '}'
 	{
-    $$ = $4
+		$$ = $4
 	}
 
 type_data_struct :
 	IDENT type_data opt_newlines
 	{
-    $$ = &ast.TypeStruct{
-      Kind: ast.TypeStructType,
-      StructNames: []string{$1.Lit},
-      StructTypes: []*ast.TypeStruct{$2},
-      Name: $2.Name,
-    }
+		$$ = &ast.TypeStruct{
+			Kind: ast.TypeStructType,
+			StructNames: []string{$1.Lit},
+			StructTypes: []*ast.TypeStruct{$2},
+			Name: $2.Name,
+		}
 	}
 	| type_data_struct ',' opt_newlines IDENT type_data
 	{
 		if $$ == nil || len($1.StructNames) == 0 {
 			yylex.Error("syntax error: unexpected ','")
-      return 1
+			return 1
 		}
-    $$.StructNames = append($$.StructNames, $4.Lit)
-    $$.StructTypes = append($$.StructTypes, $5)
+		$$.StructNames = append($$.StructNames, $4.Lit)
+		$$.StructTypes = append($$.StructTypes, $5)
 	}
 
 slice_count :
@@ -847,11 +846,11 @@ expr_literals :
 	}
 	| NUMBER
 	{
-    yyN := $1.Lit
+		yyN := $1.Lit
 		num, err := toNumber(yyN)
 		if err != nil {
 			yylex.Error("invalid number: " + yyN)
-      return 1
+			return 1
 		}
 		$$ = &ast.LiteralExpr{Literal: num}
 		$$.SetPosition($1.Position())
@@ -890,7 +889,7 @@ expr_map :
 	{
 		if $1.Keys == nil {
 			yylex.Error("syntax error: unexpected ','")
-      return 1
+			return 1
 		}
 		$$.Keys = append($$.Keys, $4)
 		$$.Values = append($$.Values, $6)
