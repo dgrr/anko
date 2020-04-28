@@ -13,6 +13,8 @@ import (
 
 // Options provides options to run VM with
 type Options struct {
+	// DisableGo disables the usage of `go` statements.
+	DisableGo      bool
 	MaxMemoryUsage int64
 	Debug          bool // run in Debug mode
 }

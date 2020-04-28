@@ -556,6 +556,7 @@ eos:
 
 // Lexer provides interface to parse codes.
 type Lexer struct {
+	opts *ParserOpts
 	s    *Scanner
 	lit  string
 	pos  ast.Position
@@ -569,6 +570,19 @@ func (l *Lexer) Lex(lval *yySymType) int {
 	if err != nil {
 		l.e = &Error{Message: err.Error(), Pos: pos, Fatal: true}
 	}
+
+	if l.opts != nil {
+		for _, tk := range l.opts.dTokens {
+			if tk == tok {
+				l.e = &Error{
+					Message: fmt.Sprintf("%s is not allowed", lit),
+					Pos:     pos,
+					Fatal:   true,
+				}
+			}
+		}
+	}
+
 	lval.tok = ast.Token{Tok: tok, Lit: lit}
 	lval.tok.SetPosition(pos)
 	l.lit = lit
@@ -583,7 +597,12 @@ func (l *Lexer) Error(msg string) {
 
 // Parse provides way to parse the code using Scanner.
 func Parse(s *Scanner) (ast.Stmt, error) {
-	l := Lexer{s: s}
+	return ParseWith(s, nil)
+}
+
+// ParseWith provides way to parse the code using Scanner with the following options.
+func ParseWith(s *Scanner, opts *ParserOpts) (ast.Stmt, error) {
+	l := Lexer{s: s, opts: opts}
 	if yyParse(&l) != 0 {
 		return nil, l.e
 	}
@@ -600,12 +619,33 @@ func EnableDebug(level int) {
 	yyDebug = level
 }
 
+// ParserOpts provides options used by the parser.
+type ParserOpts struct {
+	dTokens []int // disabled tokens
+}
+
+// NewParserOpts returns a new parser options.
+func NewParserOpts() *ParserOpts {
+	return new(ParserOpts)
+}
+
+// DisableToken forbids the usage of some token.
+func (p *ParserOpts) DisableToken(tok int) *ParserOpts {
+	p.dTokens = append(p.dTokens, tok)
+	return p
+}
+
 // ParseSrc provides way to parse the code from source.
 func ParseSrc(src string) (ast.Stmt, error) {
+	return ParseSrcWith(src, nil)
+}
+
+// ParseSrcWith parses the following source with the specified options.
+func ParseSrcWith(src string, opts *ParserOpts) (ast.Stmt, error) {
 	scanner := &Scanner{
 		src: []rune(src),
 	}
-	return Parse(scanner)
+	return ParseWith(scanner, opts)
 }
 
 func toNumber(numString string) (reflect.Value, error) {

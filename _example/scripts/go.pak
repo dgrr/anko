@@ -1,0 +1,16 @@
+import fmt
+import time
+import sync
+
+wg = make(sync.WaitGroup)
+
+wg.Add(1)
+go fn() {
+  for i = 0; i < 10; i++ {
+    fmt.Println(i)
+    time.Sleep(time.Second)
+  }
+  wg.Done()
+}()
+
+wg.Wait()
