@@ -29,6 +29,12 @@ type ImportStmt struct {
 	As    string
 }
 
+type StructStmt struct {
+	StmtImpl
+	Name string // should be identifier
+	Body *TypeStruct
+}
+
 // IfStmt provide "if/else" statement.
 type IfStmt struct {
 	StmtImpl

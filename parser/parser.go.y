@@ -12,6 +12,7 @@ import (
 %type<stmt> stmt
 %type<stmt_var_or_lets> stmt_var_or_lets
 %type<stmt_import> stmt_import
+%type<stmt_struct> stmt_struct
 %type<stmt_var> stmt_var
 %type<stmt_lets> stmt_lets
 %type<stmt_if> stmt_if
@@ -44,43 +45,44 @@ import (
 %type<expr> op_multiply
 
 %union{
-	tok                    ast.Token
+	tok                     ast.Token
 
-	compstmt               ast.Stmt
-	stmts                  ast.Stmt
-	stmt                   ast.Stmt
-	stmt_var_or_lets       ast.Stmt
-	stmt_import            ast.Stmt
-	stmt_var               ast.Stmt
-	stmt_lets              ast.Stmt
-	stmt_if                ast.Stmt
-	stmt_for               ast.Stmt
-	stmt_switch            ast.Stmt
-	stmt_switch_cases      ast.Stmt
-	stmt_switch_case       ast.Stmt
-	stmt_switch_default    ast.Stmt
+	compstmt                ast.Stmt
+	stmts                   ast.Stmt
+	stmt                    ast.Stmt
+	stmt_var_or_lets        ast.Stmt
+	stmt_import             ast.Stmt
+  stmt_struct             ast.Stmt
+	stmt_var                ast.Stmt
+	stmt_lets               ast.Stmt
+	stmt_if                 ast.Stmt
+	stmt_for                ast.Stmt
+	stmt_switch             ast.Stmt
+	stmt_switch_cases       ast.Stmt
+	stmt_switch_case        ast.Stmt
+	stmt_switch_default     ast.Stmt
 
-	exprs                  []ast.Expr
-	expr                   ast.Expr
-	expr_idents            []string
-	type_data              *ast.TypeStruct
-	type_data_struct       *ast.TypeStruct
-	slice_count            int
-	expr_member_or_ident   ast.Expr
-	expr_member            *ast.MemberExpr
-	expr_ident             *ast.IdentExpr
-	expr_literals          ast.Expr
-	expr_map               *ast.MapExpr
-	expr_slice             ast.Expr
-	expr_chan              ast.Expr
-	expr_unary             ast.Expr
-	expr_binary            ast.Expr
-	expr_lets              ast.Expr
+	exprs                   []ast.Expr
+	expr                    ast.Expr
+	expr_idents             []string
+	type_data               *ast.TypeStruct
+	type_data_struct        *ast.TypeStruct
+	slice_count             int
+	expr_member_or_ident    ast.Expr
+	expr_member             *ast.MemberExpr
+	expr_ident              *ast.IdentExpr
+	expr_literals           ast.Expr
+	expr_map                *ast.MapExpr
+	expr_slice              ast.Expr
+	expr_chan               ast.Expr
+	expr_unary              ast.Expr
+	expr_binary             ast.Expr
+	expr_lets               ast.Expr
 
-	op_binary              ast.Operator
-	op_comparison          ast.Operator
-	op_add                 ast.Operator
-	op_multiply            ast.Operator
+	op_binary               ast.Operator
+	op_comparison           ast.Operator
+	op_add                  ast.Operator
+	op_multiply             ast.Operator
 }
 
 %token<tok> IDENT NUMBER STRING ARRAY VARARG FUNC RETURN VAR THROW IF ELSE FOR IN EQEQ NEQ GE LE OROR ANDAND NEW TRUE FALSE NIL NILCOALESCE MODULE TRY CATCH FINALLY PLUSEQ MINUSEQ MULEQ DIVEQ ANDEQ OREQ BREAK CONTINUE PLUSPLUS MINUSMINUS SHIFTLEFT SHIFTRIGHT SWITCH CASE DEFAULT GO CHAN STRUCT MAKE OPCHAN EQOPCHAN TYPE LEN DELETE CLOSE MAP IMPORT AS
@@ -248,6 +250,10 @@ stmt :
 		$$ = $1
 	}
 	| stmt_import
+	{
+		$$ = $1
+	}
+	| stmt_struct
 	{
 		$$ = $1
 	}
@@ -454,6 +460,15 @@ stmt_for :
 		$$.SetPosition($1.Position())
 	}
 
+stmt_struct:
+	STRUCT IDENT '{' newlines type_data_struct newlines '}'
+	{
+		$$ = &ast.StructStmt{
+			Name: $2.Lit,
+			Body: $5,
+		}
+	}
+
 stmt_switch :
 	SWITCH expr '{' opt_newlines stmt_switch_cases opt_newlines '}'
 	{
@@ -487,7 +502,7 @@ stmt_switch_cases :
 		switchStmt := $1.(*ast.SwitchStmt)
 		if switchStmt.Default != nil {
 			yylex.Error("multiple default statement")
-      return 1
+			return 1
 		}
 		switchStmt.Default = $2
 	}
@@ -524,7 +539,7 @@ exprs :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
-      return 1
+			return 1
 		}
 		$$ = append($1, $4)
 	}
@@ -532,7 +547,7 @@ exprs :
 	{
 		if len($1) == 0 {
 			yylex.Error("syntax error: unexpected ','")
-      return 1
+			return 1
 		}
 		$$ = append($1, $4)
 	}
@@ -795,14 +810,19 @@ type_data_struct :
 			Name: $2.Name,
 		}
 	}
-	| type_data_struct ',' opt_newlines IDENT type_data
+	| type_data_struct opt_comma_newlines IDENT type_data
 	{
 		if $$ == nil || len($1.StructNames) == 0 {
-			yylex.Error("syntax error: unexpected ','")
+			yylex.Error("syntax error: expected type declaration")
 			return 1
 		}
-		$$.StructNames = append($$.StructNames, $4.Lit)
-		$$.StructTypes = append($$.StructTypes, $5)
+		if $3.Lit[0] >= 97 {
+			yylex.Error("struct declarations cannot start with a lowercase letter")
+			return 1
+		}
+
+		$$.StructNames = append($$.StructNames, $3.Lit)
+		$$.StructTypes = append($$.StructTypes, $4)
 	}
 
 slice_count :

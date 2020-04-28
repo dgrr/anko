@@ -1,0 +1,14 @@
+#!pako
+
+struct A {
+  B int
+  C float64
+  T string
+}
+
+a = make(A)
+a.B = 20
+a.C = 20.124451
+a.T = "Hello!!!!"
+
+println(a)

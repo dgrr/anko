@@ -1,10 +1,25 @@
 #!pako
 
+struct Some {
+  A int
+  B string
+}
+
 module Foo {
+  someInt = 0
+  otherInt = 20
+  some = make(Some)
+
   fn bar1() {
     println("Foo.bar1")
     return 1
   }
 }
 
+Foo.some.A = 20
+Foo.some.B = "Hello!!"
+
 println(Foo.bar1())
+println(Foo.someInt)
+println(Foo.otherInt)
+println(Foo.some)

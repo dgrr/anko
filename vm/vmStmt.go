@@ -196,6 +196,21 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 
 		runInfo.env.Define(asv, pack)
 
+	case *ast.StructStmt:
+		t := makeType(runInfo, stmt.Body)
+		if runInfo.err != nil {
+			runInfo.rv = nilValue
+			return
+		}
+		if t == nil {
+			runInfo.err = newStringError(stmt, "cannot make type nil")
+			runInfo.rv = nilValue
+			return
+		}
+
+		runInfo.env.DefineReflectType(stmt.Name, t)
+		runInfo.rv = nilValue
+
 	// VarStmt
 	case *ast.VarStmt:
 		// get right side expression values
