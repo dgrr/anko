@@ -17,6 +17,7 @@ Pako is a scriptable interpreter written in Go.
 - Strict lvalue and rvalue assignment.
 - Value unpacking/ignoring. Using ()
 - [Operator override](https://github.com/dgrr/pako/tree/master/_example/programs/override)
+- [Struct declaration](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
 
 ## Usage Example - Embedded
 
