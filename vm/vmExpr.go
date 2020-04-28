@@ -694,6 +694,7 @@ func (runInfo *runInfoStruct) invokeExpr() {
 
 	case *ast.AnonCallErrExpr:
 		runInfo.expr = expr
+		runInfo.callErr = -1
 		runInfo.anonCallErrExpr()
 
 	case *ast.CallErrExpr:

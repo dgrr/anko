@@ -50,7 +50,7 @@ import (
 	stmts                  ast.Stmt
 	stmt                   ast.Stmt
 	stmt_var_or_lets       ast.Stmt
-  stmt_import            ast.Stmt
+	stmt_import            ast.Stmt
 	stmt_var               ast.Stmt
 	stmt_lets              ast.Stmt
 	stmt_if                ast.Stmt
@@ -168,6 +168,12 @@ stmt :
 	{
 		$$ = &ast.ThrowStmt{Expr: $2}
 		$$.SetPosition($1.Position())
+	}
+  	|
+	MODULE '{'
+	{
+		yylex.Error("can't create anonymous module")
+		return 1
 	}
 	| MODULE IDENT '{' compstmt '}'
 	{

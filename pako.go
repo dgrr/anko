@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/dgrr/pako/ast"
 	"github.com/dgrr/pako/core"
 	"github.com/dgrr/pako/env"
 	_ "github.com/dgrr/pako/packages"
@@ -84,6 +85,44 @@ func doImport(pkg string) (*env.Env, error) {
 	return e, nil
 }
 
+func printCode(file string, err error) {
+	var pos ast.Position
+	switch e := err.(type) {
+	case *vm.Error:
+		pos = e.Pos
+	case *parser.Error:
+		pos = e.Pos
+	default:
+		fmt.Fprintf(os.Stderr, e.Error())
+		return
+	}
+	printDefErr := func() {
+		fmt.Fprintf(os.Stderr, "%d:%d %s\n", pos.Line, pos.Column, err)
+	}
+
+	d, e := ioutil.ReadFile(file)
+	if e != nil {
+		printDefErr()
+		return
+	}
+	lines := strings.Split(string(d), "\n")
+	for i, line := range lines {
+		if i > pos.Line+5 {
+			break
+		}
+
+		if i > pos.Line-15 {
+			if i == pos.Line-1 {
+				fmt.Print("* ")
+			} else {
+				fmt.Print("  ")
+			}
+			fmt.Printf("%d: %s\n", i, line)
+		}
+	}
+	fmt.Printf("%s\n", err)
+}
+
 func runNonInteractive() int {
 	var source string
 	if flagExecute != "" {
@@ -99,7 +138,17 @@ func runNonInteractive() int {
 
 	_, err := vm.Execute(e, nil, source)
 	if err != nil {
-		fmt.Println("Execute error:", err)
+		if flagExecute == "" {
+			printCode(file, err)
+		} else {
+			if e, ok := err.(*vm.Error); ok {
+				fmt.Fprintf(os.Stderr, "%d:%d %s\n", e.Pos.Line, e.Pos.Column, err)
+			} else if e, ok := err.(*parser.Error); ok {
+				fmt.Fprintf(os.Stderr, "%d:%d %s\n", e.Pos.Line, e.Pos.Column, err)
+			} else {
+				fmt.Fprintln(os.Stderr, err)
+			}
+		}
 		return 4
 	}
 
