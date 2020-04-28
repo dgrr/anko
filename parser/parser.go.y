@@ -8,10 +8,13 @@ import (
 %}
 
 %type<compstmt> compstmt
+%type<modstmts> modstmts
+%type<modstmt> modstmt
 %type<stmts> stmts
 %type<stmt> stmt
 %type<stmt_var_or_lets> stmt_var_or_lets
 %type<stmt_import> stmt_import
+%type<stmt_module> stmt_module
 %type<stmt_struct> stmt_struct
 %type<stmt_var> stmt_var
 %type<stmt_lets> stmt_lets
@@ -48,10 +51,13 @@ import (
 	tok                     ast.Token
 
 	compstmt                ast.Stmt
+  modstmts                ast.Stmt
+  modstmt                 ast.Stmt
 	stmts                   ast.Stmt
 	stmt                    ast.Stmt
 	stmt_var_or_lets        ast.Stmt
 	stmt_import             ast.Stmt
+  stmt_module             ast.Stmt
   stmt_struct             ast.Stmt
 	stmt_var                ast.Stmt
 	stmt_lets               ast.Stmt
@@ -142,6 +148,49 @@ stmts :
 		}
 	}
 
+modstmts:
+	opt_term modstmt
+	{
+		if $2 != nil {
+			$$ = &ast.StmtsStmt{Stmts: []ast.Stmt{$2}}
+		}
+		if l, ok := yylex.(*Lexer); ok {
+			l.stmt = $$
+		}
+	}
+	| modstmts term modstmt
+	{
+		if $3 != nil {
+			if $1 == nil {
+				$$ = &ast.StmtsStmt{Stmts: []ast.Stmt{$3}}
+			} else {
+				stmts := $1.(*ast.StmtsStmt)
+				stmts.Stmts = append(stmts.Stmts, $3)
+			}
+			if l, ok := yylex.(*Lexer); ok {
+				l.stmt = $$
+			}
+		}
+	}
+
+modstmt :
+	/* nothing */
+  {
+    $$ = nil
+  } | stmt_module
+  {
+    $$ = $1
+  }
+  | expr
+	{
+		$$ = &ast.ExprStmt{Expr: $1}
+		$$.SetPosition($1.Position())
+	} | stmt_var_or_lets
+	{
+		$$ = $1
+	}
+  
+
 stmt :
 	/* nothing */
 	{
@@ -171,17 +220,10 @@ stmt :
 		$$ = &ast.ThrowStmt{Expr: $2}
 		$$.SetPosition($1.Position())
 	}
-  	|
-	MODULE '{'
-	{
-		yylex.Error("can't create anonymous module")
-		return 1
-	}
-	| MODULE IDENT '{' compstmt '}'
-	{
-		$$ = &ast.ModuleStmt{Name: $2.Lit, Stmt: $4}
-		$$.SetPosition($1.Position())
-	}
+  | stmt_module
+  {
+    $$ = $1
+  }
 	| TRY '{' compstmt '}' CATCH IDENT '{' compstmt '}' FINALLY '{' compstmt '}'
 	{
 		$$ = &ast.TryStmt{Try: $3, Var: $6.Lit, Catch: $8, Finally: $12}
@@ -260,6 +302,18 @@ stmt :
 	| expr
 	{
 		$$ = &ast.ExprStmt{Expr: $1}
+		$$.SetPosition($1.Position())
+	}
+
+stmt_module:
+	MODULE '{'
+	{
+		yylex.Error("can't create anonymous module")
+		return 1
+	}
+	| MODULE IDENT '{' modstmts '}'
+	{
+		$$ = &ast.ModuleStmt{Name: $2.Lit, Stmt: $4}
 		$$.SetPosition($1.Position())
 	}
 
