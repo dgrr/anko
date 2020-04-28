@@ -1,0 +1,12 @@
+#!pako
+
+fn get() {
+  return 20, 40
+}
+
+a, b = get()
+println(a, b)
+
+get() as c, d
+println(c, d)
+

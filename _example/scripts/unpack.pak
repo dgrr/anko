@@ -1,0 +1,14 @@
+#!pako
+
+fn get() {
+  return 1, 2, 3, 4
+}
+
+a, b, c, d = get()
+println(a, b, c, d)
+
+(b, c, d) = get()
+println(b, c, d)
+
+(b) = get()
+println(b)
