@@ -24,12 +24,12 @@ hi def link     pakoRepeat            Repeat
 syn match       pakoDeclaration       /\<fn\>/
 syn match       pakoDeclaration       /^fn\>/
 
-syn keyword     pakoCast              bytes runes string
+syn keyword     pakoCast              bytes runes string int string float64 float32 struct
 
 hi def link     pakoCast              Type
 
 syn keyword     pakoBuiltins          keys len
-syn keyword     pakoBuiltins          println printf print
+syn keyword     pakoBuiltins          println printf print make new
 syn keyword     pakoConstants         true false nil
 
 hi def link     pakoBuiltins          Keyword
@@ -39,6 +39,7 @@ hi def link     pakoConstants         Keyword
 syn keyword     pakoTodo              contained TODO FIXME XXX BUG
 syn cluster     pakoCommentGroup      contains=pakoTodo
 syn region      pakoComment           start="#" end="$" contains=@pakoCommentGroup,@Spell
+syn region      pakoComment           start="//" end="$" contains=@pakoCommentGroup,@Spell
 
 hi def link     pakoComment           Comment
 hi def link     pakoTodo              Todo
