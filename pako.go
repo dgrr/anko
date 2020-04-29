@@ -118,12 +118,11 @@ func printCode(file string, err error) {
 				fmt.Print("  ")
 			}
 			n := fmt.Sprintf("%d", i)
-			fmt.Printf("%s:", n)
-			r := 3 - len(n)
+			r := 2 - len(n)
 			if r > 0 {
 				fmt.Print(strings.Repeat(" ", r))
 			}
-			fmt.Printf(" %s\n", line)
+			fmt.Printf("%s: %s\n", n, line)
 		}
 	}
 	fmt.Printf("%s\n", err)

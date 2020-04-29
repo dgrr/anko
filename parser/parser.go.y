@@ -51,14 +51,14 @@ import (
 	tok                     ast.Token
 
 	compstmt                ast.Stmt
-  modstmts                ast.Stmt
-  modstmt                 ast.Stmt
+	modstmts                ast.Stmt
+	modstmt                 ast.Stmt
 	stmts                   ast.Stmt
 	stmt                    ast.Stmt
 	stmt_var_or_lets        ast.Stmt
 	stmt_import             ast.Stmt
-  stmt_module             ast.Stmt
-  stmt_struct             ast.Stmt
+	stmt_module             ast.Stmt
+	stmt_struct             ast.Stmt
 	stmt_var                ast.Stmt
 	stmt_lets               ast.Stmt
 	stmt_if                 ast.Stmt
@@ -109,7 +109,6 @@ import (
 %right UNARY
 /* highest precedence */
 /* https://golang.org/ref/spec#Expression */
-
 
 %%
 
@@ -175,17 +174,27 @@ modstmts:
 
 modstmt :
 	/* nothing */
-  {
-    $$ = nil
-  } | stmt_module
-  {
-    $$ = $1
-  }
-  | expr
+	{
+		$$ = nil
+	}
+	| stmt_module
+	{
+		$$ = $1
+	}
+	| expr
 	{
 		$$ = &ast.ExprStmt{Expr: $1}
 		$$.SetPosition($1.Position())
-	} | stmt_var_or_lets
+	}
+	| stmt_var_or_lets
+	{
+		$$ = $1
+	}
+	| stmt_struct
+	{
+		$$ = $1
+	}
+	| stmt_import
 	{
 		$$ = $1
 	}
@@ -220,10 +229,10 @@ stmt :
 		$$ = &ast.ThrowStmt{Expr: $2}
 		$$.SetPosition($1.Position())
 	}
-  | stmt_module
-  {
-    $$ = $1
-  }
+	| stmt_module
+	{
+		$$ = $1
+	}
 	| TRY '{' compstmt '}' CATCH IDENT '{' compstmt '}' FINALLY '{' compstmt '}'
 	{
 		$$ = &ast.TryStmt{Try: $3, Var: $6.Lit, Catch: $8, Finally: $12}
@@ -305,7 +314,7 @@ stmt :
 		$$.SetPosition($1.Position())
 	}
 
-stmt_module:
+stmt_module :
 	MODULE '{'
 	{
 		yylex.Error("can't create anonymous module")
@@ -514,7 +523,7 @@ stmt_for :
 		$$.SetPosition($1.Position())
 	}
 
-stmt_struct:
+stmt_struct :
 	STRUCT IDENT '{' newlines type_data_struct newlines '}'
 	{
 		$$ = &ast.StructStmt{
@@ -855,7 +864,7 @@ type_data :
 	}
 
 type_data_struct :
-	IDENT type_data opt_newlines
+	IDENT type_data
 	{
 		$$ = &ast.TypeStruct{
 			Kind: ast.TypeStructType,
@@ -864,7 +873,7 @@ type_data_struct :
 			Name: $2.Name,
 		}
 	}
-	| type_data_struct opt_comma_newlines IDENT type_data
+	| type_data_struct comma_newlines IDENT type_data
 	{
 		if $$ == nil || len($1.StructNames) == 0 {
 			yylex.Error("syntax error: expected type declaration")
@@ -1255,6 +1264,11 @@ newlines :
 	| newlines newline
 
 newline : '\n'
+
+comma_newlines:
+	',' newlines
+	| newlines
+	| ','
 
 opt_comma_newlines : 
 	/* nothing */

@@ -12,3 +12,9 @@ a.C = 20.124451
 a.T = "Hello!!!!"
 
 println(a)
+
+struct B {
+  A int, B float64
+}
+
+println(make(B))
