@@ -98,7 +98,8 @@ func convertReflectValueToType(rv reflect.Value, rt reflect.Type) (reflect.Value
 		}
 	}
 
-	if rv.Type().Implements(over.StringReflectType) {
+	// as reflectValueType implements over.String we need to exclude it
+	if rv.Type() != reflectValueType && rt == stringType && rv.Type().Implements(over.StringReflectType) {
 		v := rv.Interface().(over.String)
 		return reflect.ValueOf(v.String()), nil
 	}
