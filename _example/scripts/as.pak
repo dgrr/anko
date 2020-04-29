@@ -9,4 +9,3 @@ println(a, b)
 
 get() as c, d
 println(c, d)
-

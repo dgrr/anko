@@ -20,7 +20,7 @@ type Something struct {
 	over.IndexImpl
 	over.AddImpl
 	over.MultiplyImpl
-	over.AssignImpl
+	over.SetImpl
 	over.ComparisonImpl
 	over.BinaryImpl
 	over.MemImpl
@@ -42,7 +42,7 @@ func (s *Something) Index(v interface{}) (interface{}, error) {
 	return nil, over.ErrOutOfRange
 }
 
-func (s *Something) Assign(v interface{}) error {
+func (s *Something) Set(v interface{}) error {
 	switch n := v.(type) {
 	case int:
 		s.n = n

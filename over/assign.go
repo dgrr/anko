@@ -2,15 +2,15 @@ package over
 
 import "reflect"
 
-type Assign interface {
-	// Assign =
-	Assign(interface{}) error
+type Set interface {
+	// Set =
+	Set(interface{}) error
 }
 
-var AssignReflectType = reflect.TypeOf(new(Assign)).Elem()
+var SetReflectType = reflect.TypeOf(new(Set)).Elem()
 
-type AssignImpl struct{}
+type SetImpl struct{}
 
-func (a *AssignImpl) Assign(_ interface{}) error {
+func (a *SetImpl) Set(_ interface{}) error {
 	return ErrMethodNotImplemented
 }

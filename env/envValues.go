@@ -77,10 +77,10 @@ func (e *Env) SetValueEvict(symbol string, value reflect.Value) (reflect.Value, 
 	v, ok := e.values[symbol]
 	e.rwMutex.RUnlock()
 	if ok {
-		if v.Type().Implements(over.AssignReflectType) {
-			a := v.Interface().(over.Assign)
+		if v.Type().Implements(over.SetReflectType) {
+			a := v.Interface().(over.Set)
 			vl := getUnderlayedType(value)
-			return v, a.Assign(vl)
+			return v, a.Set(vl)
 		}
 
 		e.rwMutex.Lock()
