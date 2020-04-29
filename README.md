@@ -18,6 +18,10 @@ Pako is a scriptable interpreter written in Go.
 - Value unpacking/ignoring. Using ()
 - [Operator override](https://github.com/dgrr/pako/tree/master/_example/programs/override)
 - [Struct declaration](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
+- [Safe](https://github.com/dgrr/pako/tree/master/packages/safe) and [unsafe](https://github.com/dgrr/pako/tree/master/packages/unsafe) division of the packages.
+
+# How it works
+`Source -> Parser -> VM`
 
 ## Usage Example - Embedded
 
@@ -76,9 +80,9 @@ go get github.com/dgrr/pako
 go install github.com/dgrr/pako
 ```
 
-### Running an Pako script file named script.ank
+### Running an Pako script file named script.pak
 ```
-./pako script.pak
+pako script.pak
 ```
 
 ## Pako Script Quick Start
