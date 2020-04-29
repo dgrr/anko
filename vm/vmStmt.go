@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrr/pako/ast"
 	"github.com/dgrr/pako/env"
+	"github.com/dgrr/pako/over"
 	"github.com/dgrr/pako/parser"
 )
 
@@ -508,6 +509,53 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 
 		env := runInfo.env
 		runInfo.env = env.NewEnv()
+
+		if value.Type().Implements(over.IndexReflectType) {
+			v := value.Interface().(over.Index)
+			for i := int64(0); i < v.Len(); i++ {
+				select {
+				case <-runInfo.ctx.Done():
+					runInfo.err = ErrInterrupt
+					runInfo.rv = nilValue
+					runInfo.env = env
+					return
+				default:
+				}
+
+				vi, err := v.Index(i)
+				if err != nil {
+					runInfo.err = newError(runInfo.stmt, err)
+					return
+				}
+
+				iv := reflect.ValueOf(vi)
+
+				if iv.Kind() == reflect.Interface && !iv.IsNil() {
+					iv = iv.Elem()
+				}
+				runInfo.env.DefineValue(stmt.Vars[0], iv)
+
+				runInfo.stmt = stmt.Stmt
+				runInfo.runSingleStmt()
+				if runInfo.err != nil {
+					if runInfo.err == ErrContinue {
+						runInfo.err = nil
+						continue
+					}
+					if runInfo.err == ErrReturn {
+						runInfo.env = env
+						return
+					}
+					if runInfo.err == ErrBreak {
+						runInfo.err = nil
+					}
+					break
+				}
+			}
+			runInfo.rv = nilValue
+			runInfo.env = env
+			return
+		}
 
 		switch value.Kind() {
 		case reflect.Slice, reflect.Array:

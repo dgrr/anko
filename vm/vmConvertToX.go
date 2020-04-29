@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+
+	"github.com/dgrr/pako/over"
 )
 
 // reflectValueSlicetoInterfaceSlice convert from a slice of reflect.Value to a interface slice
@@ -94,6 +96,11 @@ func convertReflectValueToType(rv reflect.Value, rt reflect.Type) (reflect.Value
 			}
 			return reflect.ValueOf(rune(aString[0])), nil
 		}
+	}
+
+	if rv.Type().Implements(over.StringReflectType) {
+		v := rv.Interface().(over.String)
+		return reflect.ValueOf(v.String()), nil
 	}
 
 	// TODO: need to handle the case where either rv or rt are a pointer but not both

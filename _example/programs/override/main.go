@@ -24,7 +24,12 @@ type Something struct {
 	over.ComparisonImpl
 	over.BinaryImpl
 	over.MemImpl
+	over.StringImpl
 	n int
+}
+
+func (s *Something) Len() int64 {
+	return 1
 }
 
 func (s *Something) Index(v interface{}) (interface{}, error) {
@@ -37,6 +42,8 @@ func (s *Something) Index(v interface{}) (interface{}, error) {
 		if n == 0 {
 			return s.n, nil
 		}
+	case string:
+		return s.n, nil
 	}
 
 	return nil, over.ErrOutOfRange
@@ -48,6 +55,8 @@ func (s *Something) Set(v interface{}) error {
 		s.n = n
 	case int64:
 		s.n = int(n)
+	case string:
+		s.n, _ = strconv.Atoi(n)
 	case *Something:
 		s.n = s.n
 	default:

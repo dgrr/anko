@@ -502,6 +502,7 @@ func (runInfo *runInfoStruct) invokeExpr() {
 		if runInfo.rv.Type().Implements(over.LenReflectType) {
 			v := runInfo.rv.Interface().(over.Len)
 			runInfo.rv = reflect.ValueOf(v.Len())
+			return
 		}
 
 		switch runInfo.rv.Kind() {

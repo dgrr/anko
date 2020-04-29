@@ -44,3 +44,14 @@ s = new(Some)
 s = 10
 
 fmt.Println(s)
+
+import strings
+
+s = strings.Replace(s, "0", "", -1)
+fmt.Println("New", s)
+
+for v in s {
+  fmt.Println(v)
+}
+k, v = s["0"]
+fmt.Println(k, v)
