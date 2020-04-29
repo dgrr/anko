@@ -5,11 +5,15 @@ import (
 	"reflect"
 )
 
-var ErrOutOfRange = errors.New("index out of range")
+var (
+	ErrOutOfRange       = errors.New("index out of range")
+	ErrUnsupportedIndex = errors.New("bad index type")
+)
 
 type Index interface {
 	// Index []
 	Index(interface{}) (interface{}, error)
+	Len
 }
 
 var IndexReflectType = reflect.TypeOf(new(Index)).Elem()
