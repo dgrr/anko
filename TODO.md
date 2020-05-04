@@ -1,6 +1,6 @@
 # TODO
 
-- [x] Struct functions
+- [x] Struct methods
 - [ ] Add `import fmt as .`
 - [ ] Memory management
 - [ ] Type casting with `as`
