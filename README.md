@@ -19,6 +19,7 @@ Pako is a scriptable interpreter written in Go.
 - [Operator override](https://github.com/dgrr/pako/tree/master/_example/programs/override)
 - [Struct declaration](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
 - [Safe](https://github.com/dgrr/pako/tree/master/packages/safe) and [unsafe](https://github.com/dgrr/pako/tree/master/packages/unsafe) division of the packages.
+- [Struct methods](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
 
 # How it works
 `Source -> Parser -> VM`
