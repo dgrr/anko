@@ -489,6 +489,7 @@ func makeType(runInfo *runInfoStruct, typeStruct *ast.TypeStruct) reflect.Type {
 			if t == nil {
 				return nil
 			}
+
 			fields = append(fields, reflect.StructField{Name: typeStruct.StructNames[i], Type: t})
 		}
 		if !runInfo.options.Debug {
@@ -515,6 +516,19 @@ func getTypeFromEnv(runInfo *runInfoStruct, typeStruct *ast.TypeStruct) reflect.
 	return t
 }
 
+func (runInfo *runInfoStruct) isVMType(name string) (b bool) {
+	if runInfo == nil {
+		return
+	}
+
+	for _, T := range runInfo.vmTypes {
+		if b = T == name; b {
+			break
+		}
+	}
+	return
+}
+
 func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Value, error) {
 	if t.Implements(over.MemReflectType) {
 		tl := reflect.New(t).Elem().Interface().(over.Mem)
@@ -523,19 +537,7 @@ func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Val
 		return reflect.ValueOf(v), err
 	}
 
-	isVM := func() (b bool) {
-		if runInfo == nil {
-			return
-		}
-
-		for _, T := range runInfo.vmTypes {
-			if b = T == name; b {
-				break
-			}
-		}
-		return
-	}()
-
+	isVM := runInfo.isVMType(name)
 	switch t.Kind() {
 	case reflect.Chan:
 		return reflect.MakeChan(t, 0), nil
@@ -589,7 +591,12 @@ func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Val
 		}
 		return structV, nil
 	}
-	return reflect.New(t).Elem(), nil
+	v := reflect.New(t).Elem()
+	if isVM {
+		v = reflect.ValueOf(&vmStruct{v})
+	}
+
+	return v, nil
 }
 
 // precedenceOfKinds returns the greater of two kinds

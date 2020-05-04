@@ -42,13 +42,14 @@ func (runInfo *runInfoStruct) funcExpr() reflect.Type {
 
 	// for adding env into saved function
 	envFunc := runInfo.env
+	vmTypes := runInfo.vmTypes
 
 	// create a function that can be used by reflect.MakeFunc
 	// this function is a translator that converts a function call into a vm run
 	// returns slice of reflect.Type with two values:
 	// return value of the function and error value of the run
 	runVMFunction := func(in []reflect.Value) []reflect.Value {
-		runInfo := runInfoStruct{ctx: in[0].Interface().(context.Context), options: runInfo.options, env: envFunc.NewEnv(), stmt: funcExpr.Stmt, rv: nilValue}
+		runInfo := runInfoStruct{ctx: in[0].Interface().(context.Context), options: runInfo.options, env: envFunc.NewEnv(), stmt: funcExpr.Stmt, rv: nilValue, vmTypes: vmTypes}
 		in = in[1:]
 		if hasRecv { // is a method
 			runInfo.rv = in[0].Interface().(reflect.Value)
@@ -131,7 +132,14 @@ func (runInfo *runInfoStruct) anonCallExpr() {
 		return
 	}
 
-	runInfo.expr = &ast.CallExpr{Func: runInfo.rv, SubExprs: anonCallExpr.SubExprs, VarArg: anonCallExpr.VarArg, Go: anonCallExpr.Go}
+	expr := &ast.CallExpr{
+		Func:     runInfo.rv,
+		SubExprs: anonCallExpr.SubExprs,
+		VarArg:   anonCallExpr.VarArg,
+		Go:       anonCallExpr.Go,
+	}
+	expr.SetPosition(anonCallExpr.Position())
+	runInfo.expr = expr
 	runInfo.invokeExpr()
 	runInfo.recv = zeroValue
 }
