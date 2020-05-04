@@ -111,7 +111,7 @@ func (runInfo *runInfoStruct) invokeExpr() {
 			return
 		}
 
-		runInfo.rv, runInfo.err = makeValue(t)
+		runInfo.rv, runInfo.err = makeValue(runInfo, "", t)
 		if runInfo.err != nil {
 			runInfo.rv = nilValue
 			return
@@ -241,6 +241,11 @@ func (runInfo *runInfoStruct) invokeExpr() {
 			}
 			return
 		}
+		runInfo.recv = runInfo.rv
+
+		if v, ok := runInfo.rv.Interface().(*vmStruct); ok {
+			runInfo.rv = v.v
+		}
 
 		value := runInfo.rv.MethodByName(expr.Name)
 		if value.IsValid() {
@@ -297,7 +302,7 @@ func (runInfo *runInfoStruct) invokeExpr() {
 
 		if item.Type().Implements(over.IndexReflectType) {
 			v := item.Interface().(over.Index)
-			vi := getUnderlayedType(runInfo.rv)
+			vi := getUnderlyingType(runInfo.rv)
 			vi, runInfo.err = v.Index(vi)
 			if runInfo.err == nil {
 				runInfo.rv = reflect.ValueOf(vi)
@@ -567,7 +572,7 @@ func (runInfo *runInfoStruct) invokeExpr() {
 			return
 		}
 
-		runInfo.rv, runInfo.err = makeValue(t)
+		runInfo.rv, runInfo.err = makeValue(runInfo, expr.TypeData.Name, t)
 
 	// MakeTypeExpr
 	case *ast.MakeTypeExpr:

@@ -654,6 +654,16 @@ expr :
 		$$ = &ast.FuncExpr{Name: $2.Lit, Params: $4, Stmt: $8, VarArg: true}
 		$$.SetPosition($1.Position())
 	}
+	| FUNC '|' IDENT '|' IDENT '(' expr_idents VARARG ')' '{' compstmt '}'
+	{
+		$$ = &ast.FuncExpr{Recv: $3.Lit, Name: $5.Lit, Params: $7, Stmt: $11, VarArg: true}
+		$$.SetPosition($1.Position())
+	}
+	| FUNC '|' IDENT '|' IDENT '(' expr_idents ')' '{' compstmt '}'
+	{
+		$$ = &ast.FuncExpr{Recv: $3.Lit, Name: $5.Lit, Params: $7, Stmt: $10}
+		$$.SetPosition($1.Position())
+	}
 	| '[' ']'
 	{
 		$$ = &ast.ArrayExpr{}

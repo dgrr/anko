@@ -57,7 +57,7 @@ func convertReflectValueToType(rv reflect.Value, rt reflect.Type) (reflect.Value
 				return rv, err
 			}
 			// need to make a new value to be able to set it
-			ptrV, err := makeValue(rt)
+			ptrV, err := makeValue(nil, "", rt)
 			if err != nil {
 				return rv, err
 			}

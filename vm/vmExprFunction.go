@@ -8,23 +8,37 @@ import (
 	"github.com/dgrr/pako/ast"
 )
 
-// funcExpr creates a function that reflect Call can use.
-// When called, it will run runVMFunction, to run the function statements
-func (runInfo *runInfoStruct) funcExpr() {
-	funcExpr := runInfo.expr.(*ast.FuncExpr)
-
+func (runInfo *runInfoStruct) funcType(params int, styp reflect.Type, hasRecv, varArg bool) reflect.Type {
+	n := 1
+	if hasRecv {
+		n++
+	}
 	// create the inTypes needed by reflect.FuncOf
-	inTypes := make([]reflect.Type, len(funcExpr.Params)+1)
+	inTypes := make([]reflect.Type, params+n)
 	// for runVMFunction first arg is always context
 	inTypes[0] = contextType
 	for i := 1; i < len(inTypes); i++ {
 		inTypes[i] = reflectValueType
 	}
-	if funcExpr.VarArg {
+	if varArg {
 		inTypes[len(inTypes)-1] = interfaceSliceType
 	}
+
 	// create funcType, output is always slice of reflect.Type with two values
-	funcType := reflect.FuncOf(inTypes, []reflect.Type{reflectValueType, reflectValueType}, funcExpr.VarArg)
+	return reflect.FuncOf(inTypes, []reflect.Type{reflectValueType, reflectValueType}, varArg)
+}
+
+// funcExpr creates a function that reflect Call can use.
+// When called, it will run runVMFunction, to run the function statements
+func (runInfo *runInfoStruct) funcExpr() reflect.Type {
+	funcExpr := runInfo.expr.(*ast.FuncExpr)
+	hasRecv := funcExpr.Recv != ""
+
+	var styp reflect.Type
+	if hasRecv {
+		styp, _ = runInfo.env.Type(funcExpr.Recv)
+	}
+	funcType := runInfo.funcType(len(funcExpr.Params), styp, hasRecv, funcExpr.VarArg)
 
 	// for adding env into saved function
 	envFunc := runInfo.env
@@ -35,21 +49,27 @@ func (runInfo *runInfoStruct) funcExpr() {
 	// return value of the function and error value of the run
 	runVMFunction := func(in []reflect.Value) []reflect.Value {
 		runInfo := runInfoStruct{ctx: in[0].Interface().(context.Context), options: runInfo.options, env: envFunc.NewEnv(), stmt: funcExpr.Stmt, rv: nilValue}
+		in = in[1:]
+		if hasRecv { // is a method
+			runInfo.rv = in[0].Interface().(reflect.Value)
+			runInfo.env.DefineValue("self", runInfo.rv)
+			in = in[1:]
+		}
 
 		// add Params to newEnv, except last Params
 		for i := 0; i < len(funcExpr.Params)-1; i++ {
-			runInfo.rv = in[i+1].Interface().(reflect.Value)
+			runInfo.rv = in[i].Interface().(reflect.Value)
 			runInfo.env.DefineValue(funcExpr.Params[i], runInfo.rv)
 		}
 		// add last Params to newEnv
 		if len(funcExpr.Params) > 0 {
 			if funcExpr.VarArg {
 				// function is variadic, add last Params to newEnv without convert to Interface and then reflect.Value
-				runInfo.rv = in[len(funcExpr.Params)]
+				runInfo.rv = in[len(funcExpr.Params)-1]
 				runInfo.env.DefineValue(funcExpr.Params[len(funcExpr.Params)-1], runInfo.rv)
 			} else {
 				// function is not variadic, add last Params to newEnv
-				runInfo.rv = in[len(funcExpr.Params)].Interface().(reflect.Value)
+				runInfo.rv = in[len(funcExpr.Params)-1].Interface().(reflect.Value)
 				runInfo.env.DefineValue(funcExpr.Params[len(funcExpr.Params)-1], runInfo.rv)
 			}
 		}
@@ -73,9 +93,11 @@ func (runInfo *runInfoStruct) funcExpr() {
 	runInfo.rv = reflect.MakeFunc(funcType, runVMFunction)
 
 	// if function name is not empty, define it in the env
-	if funcExpr.Name != "" {
+	if funcExpr.Name != "" && funcExpr.Recv == "" {
 		runInfo.env.DefineValue(funcExpr.Name, runInfo.rv)
 	}
+
+	return funcType
 }
 
 func (runInfo *runInfoStruct) anonCallErrExpr() {
@@ -111,6 +133,7 @@ func (runInfo *runInfoStruct) anonCallExpr() {
 
 	runInfo.expr = &ast.CallExpr{Func: runInfo.rv, SubExprs: anonCallExpr.SubExprs, VarArg: anonCallExpr.VarArg, Go: anonCallExpr.Go}
 	runInfo.invokeExpr()
+	runInfo.recv = zeroValue
 }
 
 func (runInfo *runInfoStruct) callErrExpr() {
@@ -276,18 +299,33 @@ func checkIfRunVMFunction(rt reflect.Type) bool {
 // makeCallArgs creates the arguments reflect.Value slice for the four different kinds of functions.
 // Also returns true if CallSlice should be used on the arguments, or false if Call should be used.
 func (runInfo *runInfoStruct) makeCallArgs(rt reflect.Type, isRunVMFunction bool, callExpr *ast.CallExpr) ([]reflect.Value, bool) {
+	hasRecv := runInfo.recv.IsValid()
+	if hasRecv {
+		var v *vmStruct
+		v, hasRecv = runInfo.recv.Interface().(*vmStruct)
+		if hasRecv {
+			runInfo.recv = reflect.ValueOf(v.v)
+		}
+	}
 	// number of arguments
 	numInReal := rt.NumIn()
 	numIn := numInReal
 	if isRunVMFunction {
 		// for runVMFunction the first arg is context so does not count against number of SubExprs
 		numIn--
+		if hasRecv {
+			numIn--
+		}
 	}
 	if numIn < 1 {
 		// no arguments needed
 		if isRunVMFunction {
 			// for runVMFunction first arg is always context
-			return []reflect.Value{reflect.ValueOf(runInfo.ctx)}, false
+			rv := []reflect.Value{reflect.ValueOf(runInfo.ctx)}
+			if hasRecv {
+				rv = append(rv, runInfo.recv)
+			}
+			return rv, false
 		}
 		return []reflect.Value{}, false
 	}
@@ -322,6 +360,10 @@ func (runInfo *runInfoStruct) makeCallArgs(rt reflect.Type, isRunVMFunction bool
 	if isRunVMFunction {
 		// for runVMFunction first arg is always context
 		args = append(args, reflect.ValueOf(runInfo.ctx))
+		if hasRecv {
+			args = append(args, runInfo.recv)
+			//indexInReal++
+		}
 		indexInReal++
 	}
 

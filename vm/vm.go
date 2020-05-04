@@ -28,6 +28,10 @@ type (
 
 	// runInfo provides run incoming and outgoing information
 	runInfoStruct struct {
+		recv     reflect.Value
+		memUsage int64
+		vmTypes  []string
+
 		// incoming
 		ctx      context.Context
 		env      *env.Env
@@ -35,16 +39,73 @@ type (
 		stmt     ast.Stmt
 		expr     ast.Expr
 		operator ast.Operator
-		memUsage int64
 
 		// outgoing
 		rv      reflect.Value
 		callErr int
 		err     error
 	}
+
+	vmStruct struct {
+		v reflect.Value
+	}
 )
 
-func getUnderlayedType(v reflect.Value) interface{} {
+func (runInfo *runInfoStruct) runDecls(ctx context.Context) {
+	mStmt := runInfo.stmt
+	defer func() {
+		runInfo.stmt = mStmt
+	}()
+
+	if stmts, ok := runInfo.stmt.(*ast.StmtsStmt); ok {
+		for i := 0; runInfo.err == nil && i < len(stmts.Stmts); i++ {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+			}
+
+			stmt := stmts.Stmts[i]
+			remove := false
+			switch st := stmt.(type) {
+			case *ast.StructStmt: // struct declaration
+				runInfo.stmt = st
+				runInfo.runSingleStmt() // struct declared if no nil is returned
+				remove = true
+			case *ast.ExprStmt: // can be a function
+				if fn, ok := st.Expr.(*ast.FuncExpr); ok && fn.Recv != "" {
+					styp, err := runInfo.env.Type(fn.Recv)
+					if err != nil {
+						runInfo.err = newStringError(fn, fn.Recv+" not declared at this point")
+					} else {
+						runInfo.expr = fn
+						ftyp := runInfo.funcExpr()
+						runInfo.env.DefineMethod(fn.Recv+"."+fn.Name, runInfo.rv)
+
+						ns := make([]reflect.StructField, styp.NumField()+1)
+						for i := 0; i < styp.NumField(); i++ {
+							ns[i] = styp.Field(i)
+						}
+						ns[len(ns)-1] = reflect.StructField{
+							Name: fn.Name,
+							Type: ftyp,
+						}
+
+						runInfo.rv = nilValue
+						runInfo.env.DefineReflectType(fn.Recv, reflect.StructOf(ns))
+						remove = true
+					}
+				}
+			}
+			if remove {
+				stmts.Stmts = append(stmts.Stmts[:i], stmts.Stmts[i+1:]...)
+				i--
+			}
+		}
+	}
+}
+
+func getUnderlyingType(v reflect.Value) interface{} {
 	for v.Type() == reflectValueType {
 		v = v.Interface().(reflect.Value)
 	}
@@ -210,7 +271,7 @@ func equal(lhsV, rhsV reflect.Value) bool {
 	}
 	if lhsV.Type().Implements(over.ComparisonReflectType) {
 		lhv := lhsV.Interface().(over.Comparison)
-		v := getUnderlayedType(rhsV)
+		v := getUnderlyingType(rhsV)
 		return lhv.Equals(v) == nil
 	}
 
@@ -454,23 +515,44 @@ func getTypeFromEnv(runInfo *runInfoStruct, typeStruct *ast.TypeStruct) reflect.
 	return t
 }
 
-func makeValue(t reflect.Type) (reflect.Value, error) {
+func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Value, error) {
 	if t.Implements(over.MemReflectType) {
-		var (
-			v   interface{}
-			err error
-		)
 		tl := reflect.New(t).Elem().Interface().(over.Mem)
-		v, err = tl.New()
+		v, err := tl.New()
 
 		return reflect.ValueOf(v), err
 	}
+
+	isVM := func() (b bool) {
+		if runInfo == nil {
+			return
+		}
+
+		for _, T := range runInfo.vmTypes {
+			if b = T == name; b {
+				break
+			}
+		}
+		return
+	}()
 
 	switch t.Kind() {
 	case reflect.Chan:
 		return reflect.MakeChan(t, 0), nil
 	case reflect.Func:
-		return reflect.MakeFunc(t, nil), nil
+		if t.NumIn() < 2 || t.In(0) != contextType {
+			return reflect.MakeFunc(t, nil), nil
+		}
+		v := t.In(1)
+		if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+			v = v.Elem()
+		}
+		V, err := runInfo.env.Method(name)
+		if err != nil {
+			return reflect.MakeFunc(t, nil), nil
+		}
+
+		return V, nil
 	case reflect.Map:
 		// note creating slice as work around to create map
 		// just doing MakeMap can give incorrect type for defined types
@@ -479,7 +561,7 @@ func makeValue(t reflect.Type) (reflect.Value, error) {
 		return value.Index(0), nil
 	case reflect.Ptr:
 		ptrV := reflect.New(t.Elem())
-		v, err := makeValue(t.Elem())
+		v, err := makeValue(runInfo, "", t.Elem())
 		if err != nil {
 			return nilValue, err
 		}
@@ -494,13 +576,16 @@ func makeValue(t reflect.Type) (reflect.Value, error) {
 			if structV.Field(i).Kind() == reflect.Ptr {
 				continue
 			}
-			v, err := makeValue(structV.Field(i).Type())
+			v, err := makeValue(runInfo, name+"."+t.Field(i).Name, structV.Field(i).Type())
 			if err != nil {
 				return nilValue, err
 			}
 			if structV.Field(i).CanSet() {
 				structV.Field(i).Set(v)
 			}
+		}
+		if isVM {
+			structV = reflect.ValueOf(&vmStruct{structV})
 		}
 		return structV, nil
 	}

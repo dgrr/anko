@@ -149,6 +149,7 @@ type SliceExpr struct {
 // FuncExpr provide function expression.
 type FuncExpr struct {
 	ExprImpl
+	Recv   string
 	Name   string
 	Stmt   Stmt
 	Params []string

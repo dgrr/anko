@@ -43,10 +43,15 @@ func RunContext(ctx context.Context, env *env.Env, options *Options, stmt ast.St
 	if runInfo.options == nil {
 		runInfo.options = &Options{}
 	}
-	runInfo.runSingleStmt()
-	if runInfo.err == ErrReturn {
-		runInfo.err = nil
+
+	runInfo.runDecls(ctx)
+	if runInfo.err == nil {
+		runInfo.runSingleStmt()
+		if runInfo.err == ErrReturn {
+			runInfo.err = nil
+		}
 	}
+
 	return runInfo.rv.Interface(), runInfo.err
 }
 
@@ -209,6 +214,7 @@ func (runInfo *runInfoStruct) runSingleStmt() {
 			return
 		}
 
+		runInfo.vmTypes = append(runInfo.vmTypes, stmt.Name)
 		runInfo.env.DefineReflectType(stmt.Name, t)
 		runInfo.rv = nilValue
 

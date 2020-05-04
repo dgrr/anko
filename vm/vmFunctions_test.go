@@ -406,7 +406,7 @@ func TestPointerFunctions(t *testing.T) {
 			return "cannot set"
 		}
 		slice := reflect.MakeSlice(interfaceSliceType, 0, 1)
-		value, _ := makeValue(stringType)
+		value, _ := makeValue(nil, "", stringType)
 		value.SetString("b")
 		slice = reflect.Append(slice, value)
 		rv.Elem().Set(slice)

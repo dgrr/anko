@@ -6,15 +6,19 @@ struct A {
   T string
 }
 
+fn |A| GetT() {
+  return self.T
+}
+
+fn |A| AddToB(k) {
+  self.B += k
+}
+
 a = make(A)
 a.B = 20
 a.C = 20.124451
 a.T = "Hello!!!!"
 
-println(a)
+a.AddToB(1)
 
-struct B {
-  A int, B float64
-}
-
-println(make(B))
+println(a.GetT())

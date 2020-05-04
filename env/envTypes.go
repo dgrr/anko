@@ -81,3 +81,29 @@ func (e *Env) Type(symbol string) (reflect.Type, error) {
 
 	return e.parent.Type(symbol)
 }
+
+// Method is used to define methods in structs.
+func (e *Env) Method(symbol string) (reflect.Value, error) {
+	e.rwMutex.RLock()
+	v, ok := e.methods[symbol]
+	e.rwMutex.RUnlock()
+	if ok {
+		return v, nil
+	}
+
+	if e.parent == nil {
+		return reflect.Value{}, fmt.Errorf("undefined method '%s'", symbol)
+	}
+
+	return e.parent.Method(symbol)
+}
+
+// DefineMethod will define a method in a struct.
+func (e *Env) DefineMethod(symbol string, v reflect.Value) {
+	e.rwMutex.Lock()
+	if e.methods == nil {
+		e.methods = make(map[string]reflect.Value)
+	}
+	e.methods[symbol] = v
+	e.rwMutex.Unlock()
+}

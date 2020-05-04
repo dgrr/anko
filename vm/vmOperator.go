@@ -84,7 +84,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "<":
 			if lhsV.Type().Implements(over.ComparisonReflectType) {
 				lhv := lhsV.Interface().(over.Comparison)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				runInfo.err = lhv.Less(v)
 				if runInfo.err == nil {
 					runInfo.rv = trueValue
@@ -96,7 +96,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "<=":
 			if lhsV.Type().Implements(over.ComparisonReflectType) {
 				lhv := lhsV.Interface().(over.Comparison)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				runInfo.err = lhv.LessEquals(v)
 				if runInfo.err == nil {
 					runInfo.rv = trueValue
@@ -108,7 +108,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case ">":
 			if lhsV.Type().Implements(over.ComparisonReflectType) {
 				lhv := lhsV.Interface().(over.Comparison)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				runInfo.err = lhv.Greater(v)
 				if runInfo.err == nil {
 					runInfo.rv = trueValue
@@ -120,7 +120,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case ">=":
 			if lhsV.Type().Implements(over.ComparisonReflectType) {
 				lhv := lhsV.Interface().(over.Comparison)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				runInfo.err = lhv.GreaterEquals(v)
 				if runInfo.err == nil {
 					runInfo.rv = trueValue
@@ -159,7 +159,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "+":
 			if lhsV.Type().Implements(over.AddReflectType) {
 				adder := lhsV.Interface().(over.Add)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = adder.Add(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -206,7 +206,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "-":
 			if lhsV.Type().Implements(over.AddReflectType) {
 				adder := lhsV.Interface().(over.Add)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = adder.Sub(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -229,7 +229,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "|":
 			if lhsV.Type().Implements(over.AddReflectType) {
 				adder := lhsV.Interface().(over.Add)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = adder.Or(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -267,7 +267,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "*":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.Mul(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -287,7 +287,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "/":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.Div(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -299,7 +299,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "%":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.Mod(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -311,7 +311,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case ">>":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.Right(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -323,7 +323,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "<<":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.Left(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)
@@ -335,7 +335,7 @@ func (runInfo *runInfoStruct) invokeOperator() {
 		case "&":
 			if lhsV.Type().Implements(over.MultiplyReflectType) {
 				mul := lhsV.Interface().(over.Multiply)
-				v := getUnderlayedType(runInfo.rv)
+				v := getUnderlyingType(runInfo.rv)
 				v, runInfo.err = mul.And(v)
 				if runInfo.err == nil {
 					runInfo.rv = reflect.ValueOf(v)

@@ -44,6 +44,9 @@ func (runInfo *runInfoStruct) invokeLetExpr() {
 			}
 			return
 		}
+		if v, ok := runInfo.rv.Interface().(*vmStruct); ok {
+			runInfo.rv = v.v
+		}
 
 		if runInfo.rv.Kind() == reflect.Ptr {
 			runInfo.rv = runInfo.rv.Elem()

@@ -25,6 +25,7 @@ type (
 		parent         *Env
 		values         map[string]reflect.Value
 		types          map[string]reflect.Type
+		methods        map[string]reflect.Value
 		externalLookup ExternalLookup
 	}
 )
