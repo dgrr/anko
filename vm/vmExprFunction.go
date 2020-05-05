@@ -17,7 +17,10 @@ func (runInfo *runInfoStruct) funcType(params int, styp reflect.Type, hasRecv, v
 	inTypes := make([]reflect.Type, params+n)
 	// for runVMFunction first arg is always context
 	inTypes[0] = contextType
-	for i := 1; i < len(inTypes); i++ {
+	if hasRecv { // if has a recv then the second arg should be a vmStruct
+		inTypes[1] = vmStructType
+	}
+	for i := n; i < len(inTypes); i++ {
 		inTypes[i] = reflectValueType
 	}
 	if varArg {
@@ -52,7 +55,7 @@ func (runInfo *runInfoStruct) funcExpr() reflect.Type {
 		runInfo := runInfoStruct{ctx: in[0].Interface().(context.Context), options: runInfo.options, env: envFunc.NewEnv(), stmt: funcExpr.Stmt, rv: nilValue, vmTypes: vmTypes}
 		in = in[1:]
 		if hasRecv { // is a method
-			runInfo.rv = in[0].Interface().(reflect.Value)
+			runInfo.rv = in[0].Interface().(*vmStruct).v
 			runInfo.env.DefineValue("self", runInfo.rv)
 			in = in[1:]
 		}
@@ -282,6 +285,9 @@ func (runInfo *runInfoStruct) callExpr() {
 // checkIfRunVMFunction checking the number and types of the reflect.Type.
 // If it matches the types for a runVMFunction this will return true, otherwise false
 func checkIfRunVMFunction(rt reflect.Type) bool {
+	if rt.NumIn() >= 2 && rt.In(0) == contextType && rt.In(1) == vmStructType {
+		return true
+	}
 	if rt.NumIn() < 1 || rt.NumOut() != 2 || rt.In(0) != contextType || rt.Out(0) != reflectValueType || rt.Out(1) != reflectValueType {
 		return false
 	}
@@ -307,17 +313,10 @@ func checkIfRunVMFunction(rt reflect.Type) bool {
 // makeCallArgs creates the arguments reflect.Value slice for the four different kinds of functions.
 // Also returns true if CallSlice should be used on the arguments, or false if Call should be used.
 func (runInfo *runInfoStruct) makeCallArgs(rt reflect.Type, isRunVMFunction bool, callExpr *ast.CallExpr) ([]reflect.Value, bool) {
-	hasRecv := runInfo.recv.IsValid()
-	if hasRecv {
-		var v *vmStruct
-		v, hasRecv = runInfo.recv.Interface().(*vmStruct)
-		if hasRecv {
-			runInfo.recv = reflect.ValueOf(v.v)
-		}
-	}
 	// number of arguments
 	numInReal := rt.NumIn()
 	numIn := numInReal
+	hasRecv := runInfo.recv.IsValid() && numIn >= 2 && rt.In(1) == vmStructType
 	if isRunVMFunction {
 		// for runVMFunction the first arg is context so does not count against number of SubExprs
 		numIn--
@@ -325,6 +324,12 @@ func (runInfo *runInfoStruct) makeCallArgs(rt reflect.Type, isRunVMFunction bool
 			numIn--
 		}
 	}
+	if hasRecv {
+		if runInfo.recv.Type() != vmStructType {
+			runInfo.recv = reflect.ValueOf(&vmStruct{runInfo.recv})
+		}
+	}
+
 	if numIn < 1 {
 		// no arguments needed
 		if isRunVMFunction {

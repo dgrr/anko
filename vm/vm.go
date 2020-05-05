@@ -168,6 +168,7 @@ var (
 	errorType          = reflect.ValueOf([]error{nil}).Index(0).Type()
 	vmErrorType        = reflect.TypeOf(&Error{})
 	contextType        = reflect.TypeOf((*context.Context)(nil)).Elem()
+	vmStructType       = reflect.TypeOf((*vmStruct)(nil))
 
 	nilValue                  = reflect.New(reflect.TypeOf((*interface{})(nil)).Elem()).Elem()
 	trueValue                 = reflect.ValueOf(true)
@@ -537,7 +538,6 @@ func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Val
 		return reflect.ValueOf(v), err
 	}
 
-	isVM := runInfo.isVMType(name)
 	switch t.Kind() {
 	case reflect.Chan:
 		return reflect.MakeChan(t, 0), nil
@@ -586,17 +586,10 @@ func makeValue(runInfo *runInfoStruct, name string, t reflect.Type) (reflect.Val
 				structV.Field(i).Set(v)
 			}
 		}
-		if isVM {
-			structV = reflect.ValueOf(&vmStruct{structV})
-		}
 		return structV, nil
 	}
-	v := reflect.New(t).Elem()
-	if isVM {
-		v = reflect.ValueOf(&vmStruct{v})
-	}
 
-	return v, nil
+	return reflect.New(t).Elem(), nil
 }
 
 // precedenceOfKinds returns the greater of two kinds
