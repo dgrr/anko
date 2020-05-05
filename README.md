@@ -20,6 +20,7 @@ Pako is a scriptable interpreter written in Go.
 - [Struct declaration](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
 - [Safe](https://github.com/dgrr/pako/tree/master/packages/safe) and [unsafe](https://github.com/dgrr/pako/tree/master/packages/unsafe) division of the packages.
 - [Struct methods](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak)
+- Struct constructors.
 - Runs struct declarations before executing. See [this](https://github.com/dgrr/pako/tree/master/_example/scripts/struct.pak) example.
 
 # How it works
