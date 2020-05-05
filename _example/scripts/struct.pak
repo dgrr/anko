@@ -20,17 +20,20 @@ a.C = 20.124451
 a.T = "Hello!!!!"
 
 a.AddToB(1)
+a.AddToB(19)
 
 println(a.GetT())
-
 println(a)
 
 b = make(B)
-b.C = make(A)
-b.C.T = "Hello3"
-println(b.C.T)
+b.C.T = "Hello2 !!!"
 println(b.C.GetT())
 
 struct B {
   C A
+}
+
+// constructor
+fn |B| New() {
+  self.C = make(A)
 }

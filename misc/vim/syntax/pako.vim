@@ -11,7 +11,7 @@ syn keyword     pakoDeclaration       var
 hi def link     pakoDirective         Statement
 hi def link     pakoDeclaration       Type
 
-syn keyword     pakoStatement         return break continue throw
+syn keyword     pakoStatement         return break continue throw self
 syn keyword     pakoConditional       if else switch try catch finally
 syn keyword     pakoLabel             case default
 syn keyword     pakoRepeat            for range

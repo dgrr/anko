@@ -80,6 +80,7 @@ func (runInfo *runInfoStruct) runDecls(ctx context.Context) {
 					} else {
 						runInfo.expr = fn
 						ftyp := runInfo.funcExpr()
+						// we need to store the value in some way...
 						runInfo.env.DefineMethod(fn.Recv+"."+fn.Name, runInfo.rv)
 
 						ns := make([]reflect.StructField, styp.NumField()+1)

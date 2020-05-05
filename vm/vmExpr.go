@@ -573,6 +573,27 @@ func (runInfo *runInfoStruct) invokeExpr() {
 		}
 
 		runInfo.rv, runInfo.err = makeValue(runInfo, expr.TypeData.Name, t)
+		if runInfo.err == nil &&
+			(runInfo.rv.Kind() == reflect.Struct ||
+				(runInfo.rv.Kind() == reflect.Ptr && runInfo.rv.Elem().Kind() == reflect.Struct)) {
+			var vc reflect.Value
+			if runInfo.rv.Kind() == reflect.Ptr {
+				vc = runInfo.rv.Elem().FieldByName("New")
+			} else {
+				vc = runInfo.rv.FieldByName("New")
+			}
+
+			if vc.IsValid() {
+				v := runInfo.rv
+				if v.Type() != vmStructType {
+					v = reflect.ValueOf(&vmStruct{v})
+				}
+				args := []reflect.Value{
+					reflect.ValueOf(runInfo.ctx), v,
+				}
+				vc.Call(args)
+			}
+		}
 
 	// MakeTypeExpr
 	case *ast.MakeTypeExpr:

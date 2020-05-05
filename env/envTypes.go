@@ -83,6 +83,8 @@ func (e *Env) Type(symbol string) (reflect.Type, error) {
 }
 
 // Method is used to define methods in structs.
+//
+// The symbol should be the name of the struct + "." + function name.
 func (e *Env) Method(symbol string) (reflect.Value, error) {
 	e.rwMutex.RLock()
 	v, ok := e.methods[symbol]
