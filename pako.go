@@ -72,7 +72,7 @@ func doImport(pkg string) (*env.Env, error) {
 	e := env.NewEnv()
 	pkg = strings.Replace(pkg, ".", string(os.PathSeparator), -1)
 
-	d, err := ioutil.ReadFile(pkg + ".ank")
+	d, err := ioutil.ReadFile(pkg + ".pak")
 	if err != nil {
 		return nil, err
 	}
