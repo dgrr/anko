@@ -304,7 +304,9 @@ func (runInfo *runInfoStruct) invokeExpr() {
 			v := item.Interface().(over.Index)
 			vi := getUnderlyingType(runInfo.rv)
 			vi, runInfo.err = v.Index(vi)
-			if runInfo.err == nil {
+			if vi == nil {
+				runInfo.rv = nilValue
+			} else {
 				runInfo.rv = reflect.ValueOf(vi)
 			}
 			return
